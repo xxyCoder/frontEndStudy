@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>节点</title>
+</head>
+<body>
+    <p id="title">hello world</p>
+    <ul id="list">
+        <!-- 注释节点 -->
+        <li>item1</li>
+        <li>item2</li>
+        <li>item3</li>
+        <li>item4</li>
+        <li>
+            <ul>
+                <li>item5</li>
+            </ul>
+        </li>
+    </ul>
+    <script>
+        const p = document.getElementById('title');
+        if(p.nodeType === 1) {
+            console.log(p.nodeName);
+        }
+        const ul = document.getElementById('list');
+        console.log(ul.childNodes);
+        console.log(ul.parentNode);
+        console.log(p.nextSibling);
+        console.log(ul.previousSibling)
+        console.log(ul.ownerDocument);
+        // 操作DOM
+        p.mycolor = "red";
+        console.log(p.getAttribute("mycolor"));
+        console.log('------------------------');
+        console.log(p.attributes.getNamedItem('id').nodeName,"=",p.attributes.getNamedItem('id').nodeValue);
+        // 创建元素
+        let div = document.createElement('div');
+        div.id = "newDiv";
+        div.className = "box";
+        document.body.insertBefore(div,ul);
+
+        // childNodes只要元素节点 实现方法
+        // 1. 判断nodeType 获取子代
+        for(let i = 0;i < ul.childNodes.length;++ i) {
+            if(ul.childNodes[i].nodeType == 1) {
+                console.log(ul.childNodes[i]);
+            }
+        }
+        // 2. 对其使用getElementsByTagName 可以获取子代及其后代
+        console.log(ul.getElementsByTagName('li'));
+        // 3. 使用children方法 获取子代
+        console.log(ul.children);
+        // 文本节点
+        console.log('.............');
+        let text1 = document.createTextNode('hello createTextNode');
+        text1.appendData(',1');
+        div.appendChild(text1);
+        let text2 = document.createTextNode('hello createTextNode,2');
+        div.appendChild(text2);
+        let text3 = document.createTextNode('hello createTextNode,3');
+        div.appendChild(text3);
+        console.log(div.childNodes);
+        // 规范化
+        div.normalize();
+        console.log(div.childNodes);
+        // 拆分文本
+        let newText = div.firstChild.splitText(5);
+        console.log(div.firstChild.textContent);
+        // 删除文本
+        div.firstChild.deleteData(1,1);
+        console.log(div.firstChild.textContent);
+    </script>
+</body>
+</html>

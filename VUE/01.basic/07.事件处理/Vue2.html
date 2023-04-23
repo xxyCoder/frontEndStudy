@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <style>
+        .father {
+            height: 500px;
+            background-color: green;
+        }
+        .son1 {
+            height: 200px;
+            background-color: red;
+        }
+        .son2 {
+            height: 200px;
+            background-color: yellow;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>{{count}}</h1>
+        <!-- 内联事件处理器 -->
+        <button @click="++ count">+1</button>
+        <button @click="say('hi')">sayHi</button>
+        <!-- 方法事件处理 -->
+        <button @click="add">+1</button>
+        <button @click="add()">+1</button>
+        <button @click="add($event)">+1</button>
+        <div class="father" @click.capture.once="show('father')">
+            <div class="son1" @click.stop="show('son1')"></div>
+            <div class="son2" @click="show('son2')"></div>
+        </div>
+    </div>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    count: 0
+                }
+            },
+            methods: {
+                add(e) {
+                    console.log(e);
+                    ++ this.count;
+                },
+                say(message) {
+                    console.log(message);
+                },
+                show(msg) {
+                    console.log(msg);
+                }  
+            },
+        });
+    </script>
+</body>
+
+</html>

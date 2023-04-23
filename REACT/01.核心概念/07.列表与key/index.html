@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>react</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root">
+    </div>
+    <script type="text/babel">
+        class Demo extends React.Component {
+            state = {
+                numbers: [
+                    {id: '001',name: 'message1'},
+                    {id: '002',name: 'message2'},
+                    {id: '003',name: 'message3'},
+                ]
+            }
+            render() {
+                return (
+                    <ul>
+                        {
+                            this.state.numbers.map((number) => {
+                                return <li key={number.id}>{number.name}</li>
+                            })
+                        }
+                    </ul>
+                )
+            }
+        }
+        ReactDOM.render(<Demo/>,document.getElementById('root'));
+    </script>
+</body>
+
+</html>

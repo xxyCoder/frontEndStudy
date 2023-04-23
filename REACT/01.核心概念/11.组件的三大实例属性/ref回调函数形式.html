@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.6/prop-types.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Demo extends React.Component {
+            showData = () => {
+                console.log(this);
+                console.log(this.input1.value);
+            }
+            showData2 = () => {
+                console.log(this.input2.value);
+            }
+            changeWeather = () => {
+                let isHot = this.state.isHot;
+                this.setState({
+                    isHot: !isHot
+                })
+            }
+            saveInput = (currentNode) => {
+                this.input1 = currentNode;
+                console.log('func',currentNode);
+            }
+            state = {isHot: false}
+            render() {
+                // 对于更新时候ref的回调函数会调用两次，第一次传入null 第二次传入当前节点，这是因为每次渲染的时候会创建一个新的函数实例，要清空旧节点
+                // 绑定成函数形式或类形式可以解决
+                return (
+                    <div>
+                        <input ref={(currentNode)=> {console.log(currentNode);this.input1 = currentNode}} type="text" placeholder="点击按钮提示数据" />&nbsp;&nbsp;
+                        <input ref={this.saveInput} type="text" placeholder="点击按钮提示数据" />&nbsp;&nbsp;
+                        <button onClick={this.showData}>点我提示左侧数据</button>&nbsp;&nbsp;
+                        <input ref={(currentNode) => {this.input2 = currentNode}} onBlur={this.showData2} type="text" placeholder="失去焦点提示数据" />
+                        <h1 onClick={this.changeWeather}>今天天气{this.state.isHot ? '炎热' : '凉爽'}</h1>
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(<Demo />,document.getElementById('root'));
+    </script>
+</body>
+
+</html>

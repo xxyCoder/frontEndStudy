@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试浮动元素margin与padding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        div {
+            width: 100px;
+            height: 100px;
+        }
+        .floatBox {
+            background-color: red;
+            float: left;
+            margin: 10px
+        }
+        .normalBox {
+            width: 200px;
+            height: 300px;
+            margin: 100px;
+            margin-top: -100px;
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <div class="floatBox"></div>
+    <div class="floatBox"></div>
+    <div class="normalBox"></div>
+    <div class="floatBox"></div>
+    <div class="floatBox"></div>
+    <div class="floatBox"></div>
+</body>
+</html>

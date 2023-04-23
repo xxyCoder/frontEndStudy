@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>react</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root">
+    </div>
+    <script type="text/babel">
+        function EventHandler() {
+            function talk(event) {
+                console.log(this);
+                console.log(event)
+                console.log('onClick');
+            }
+            return (
+                <button onClick={talk}>说话</button>
+            )
+        }
+        class Demo1 extends React.Component {
+            // handleClick() {
+            //     console.log(this);  // undefined
+            // }
+            
+            handleClick = () => {
+                console.log(this);
+            }
+            handleClick1 = (id,event) => {
+                console.log(this);
+                console.log(event,id);
+            }
+            render() {
+                return (
+                    <div>
+                        <button onClick={this.handleClick}>说话</button>
+                        <button onClick={(e) => this.handleClick1(2,e)}>说话</button>
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(
+            <div>
+                <EventHandler/>
+                <hr/>
+                <Demo1/>
+            </div>
+            ,document.getElementById('root'));
+    </script>
+</body>
+
+</html>

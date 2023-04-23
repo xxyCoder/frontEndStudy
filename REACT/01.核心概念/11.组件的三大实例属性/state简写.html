@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Weather extends React.Component {
+            constructor(props) {
+                super(props)
+                // this.changeWeather = this.changeWeather.bind(this);
+            }
+            state = {isHot: false}
+            render() {
+                return <h1 onClick={this.changeWeather}>今天天气{this.state.isHot ? '炎热' : '凉爽'}</h1>
+            }
+            // 箭头函数没有关键字，会去外层找
+            changeWeather = () => {
+                let isHot = this.state.isHot;
+                this.setState({
+                    isHot: !isHot
+                })
+            }
+        }
+
+        ReactDOM.render(<Weather />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>

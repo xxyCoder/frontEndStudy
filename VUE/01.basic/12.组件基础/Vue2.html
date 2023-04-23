@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div :style="{fontSize: fontSize + 'em'}">
+            <!-- $event 访问到被抛出的这个值 -->
+            <post v-on:enlarge-text="fontSize += $event" v-for="(title,index) in titles" :key="index" :title="title"></post>
+        </div>
+        <alert-box>
+            <h2>Hello</h2>
+        </alert-box>
+        <!-- 动态组件 -->
+        <component :is="currentTabComponent"></component>
+        <button @click="currentTabComponent = currentTabComponent === 'home-box' ? 'message-box' : 'home-box';console.log(currentTabComponent)">切换组件</button>
+    </div>
+    <script>
+        Vue.component('post',{
+            props: ['title'],
+            template: `
+                <div>
+                    <h2>{{title}}</h2>
+                    <button v-on:click="$emit('enlarge-text',0.1)">字号变大</button>
+                </div>
+            `
+        });
+        Vue.component('alert-box',{
+            template:`
+                <div>
+                    <strong>Error!</strong>
+                    <slot></slot>
+                </div>
+            `
+        });
+        Vue.component('home-box',{
+            template:`
+                <div>
+                    <strong>Home!</strong>
+                </div>
+            `
+        });
+        Vue.component('message-box',{
+            template:`
+                <div>
+                    <strong>message!</strong>
+                </div>
+            `
+        });
+        const vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    titles: ['message1','message2','message3'],
+                    fontSize: 1,
+                    currentTabComponent:'home-box'
+                }
+            },
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        {{message}}
+        <br/>
+        {{reverseMessage}}
+        {{reverseMessage}}
+        <br/>
+        {{reverseMessage1()}}
+        {{reverseMessage1()}}
+        <br/>
+        <input type="text" v-model="firstName"/>
+        <input type="text" v-model="lastName"/>
+        {{fullName}}
+    </div>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue2',
+                firstName: '张',
+                lastName: '三',
+                fullName: '张三'
+            },
+            methods: {
+                reverseMessage1() {
+                    console.log('methods');
+                    return this.message.split('').reverse().join('');
+                }
+            },
+            computed: {
+                // getter
+                reverseMessage() {
+                    console.log('computed');
+                    return this.message.split('').reverse().join('');
+                }
+            },
+            watch: {
+                firstName(val) {
+                    clearInterval(this.timer);
+                    this.timer = setInterval(() => {
+                        this.fullName = val + this.lastName;
+                    },2000);
+                },
+                lastName(val) {
+                    this.fullName = this.firstName + val;
+                }
+            }
+        });
+        vm.$data.afterCreate = "can you see?";
+    </script>
+</body>
+
+</html>

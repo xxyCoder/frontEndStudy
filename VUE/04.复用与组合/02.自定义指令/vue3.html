@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue3</title>
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+      </script>
+</head>
+
+<body>
+    <div id="app">
+        <div v-color="color">{{message}}</div>
+        <input v-focus />
+    </div>
+    <script type="module">
+        import { createApp } from 'vue'
+        createApp({
+            data() {
+                return {
+                    message: 'Hello Vue!',
+                    color: 'red'
+                }
+            }
+        })
+        // 全局使用
+        .directive('focus',{
+            mounted(el) {
+                el.focus();   
+            }
+        })
+        // 简写，只有mounted和update实现相同行为且不关心其他钩子
+        .directive('color',(el,binding) => {
+            el.style.color = binding.value
+        })
+        .mount('#app')
+    </script>
+
+</body>
+
+</html>

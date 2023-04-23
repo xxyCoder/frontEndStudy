@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        <component-b title="day1" context="学习"></component-b>
+    </div>
+    <script>
+        let ComponentA = {
+            // 对象形式，可以对值进行限制
+            props: {
+                'title': [String,Number],   // 多个可能的值
+                'context': {
+                    type: String,
+                    required: true,
+                    // 自定义验证器，必须匹配下面中的一个
+                    validator: function(val) {
+                        return ['学习','睡觉','打游戏'].includes(val);
+                    }
+                },
+                'about': {
+                    type: String,
+                    default: "none"
+                },
+                'user': {
+                    type: Object,
+                    // 对象或数组类型必须从函数工厂获取默认值
+                    default: function(val) {
+                        return {
+                            name:'张三',
+                            age: 20
+                        };
+                    }
+                }
+            },
+            template: `
+                <div>
+                    <div>{{title}} ===> {{context}}</div>
+                    <div>{{user}}</div>
+                    <div>{{about}}</div>
+                </div>
+            `
+        };
+        let ComponentB = {
+            // 数组形式
+            props:['title','context'],
+            components: {
+                'component-a': ComponentA
+            },
+            template: `<component-a :title="title" :context="context"></component-a>`
+        };
+        new Vue({
+            el: '#app',
+            components: {
+                'component-b': ComponentB
+            }
+        });
+
+    </script>
+</body>
+
+</html>

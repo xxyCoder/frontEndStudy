@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        <base-checkbox v-model="lovingVue"></base-checkbox>
+        <!-- <text-document v-bind:title="doc.title" v-on:update:title="doc.title = $event"></text-document> -->
+        <!-- 简写 -->
+        <text-document v-bind:title.sync="doc.title"></text-document>
+    </div>
+    <script>
+        // 自定义组件的v-model
+        Vue.component('base-checkbox',{
+            model: {
+                prop: 'checked',
+                event: 'change'
+            },
+            props: {
+                checked: Boolean
+            },
+            template:`
+                <input type="checkbox" v-bind:checked="checked" v-on:change="$emit('change',$event.target.checked)" />
+            `
+        });
+        Vue.component('text-document',{
+            props: ['title'],
+            methods: {
+                changeTitle() {
+                    this.$emit('update:title',"day2");
+                }
+            },
+            template: `
+                <div>
+                    {{title}}
+                    <button @click="changeTitle">改变title</button>
+                </div>
+            `
+        })
+        new Vue({
+            el: '#app',
+            data() {
+                return {
+                    lovingVue: false,
+                    doc: {
+                        title: "day1"
+                    }
+                }
+            },
+            watch: {
+                lovingVue() {
+                    console.log(this.lovingVue);
+                }
+            }
+        });
+
+    </script>
+</body>
+
+</html>

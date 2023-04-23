@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        <component-a></component-a>
+        <component-a>save</component-a>
+        <component-b>
+            <template v-slot:header>
+                <h1>HEADER</h1>
+            </template>
+            <!-- 任何没有被包裹在带有 v-slot 的 <template> 中的内容都会被视为默认插槽的内容。 -->
+            <p>123</p>
+            <p>456</p>
+            <template v-slot:footer>
+                <h2>FOOTER</h2>
+            </template>
+        </component-b>
+        <component-c>
+            <template v-slot:default="slotProps">
+                {{slotProps.user.firstName}}
+            </template>
+        </component-c>
+        <component-c></component-c>
+        <component-d>
+            <h1 slot="header" slot-scope="slotProps">
+                {{slotProps.msg}}
+            </h1>
+        </component-d>
+    </div>
+    <script>
+        // 局部注册
+        let ComponentA = {
+            template: `
+                <button type="submit">
+                    <slot>submit</slot>
+                </button>
+            `
+        };
+        let ComponentB = {
+            template: `
+                <div class="container">
+                    <header>
+                        <slot name="header"></slot>
+                    </header>
+                    <main>
+                        <slot></slot>
+                    </main>
+                    <footer>
+                        <slot name="footer"></slot>
+                    </footer>
+                </div>
+            `
+        };
+        // 作用域插槽，访问子组件数据/
+        let ComponentC = {
+            template: `
+                <span>
+                    <slot v-bind:user="user">
+                        {{user.lastName}}
+                    </slot>
+                </span>
+            `,
+            data() {
+                return {
+                    user: {
+                        firstName: '张',
+                        lastName: '三'
+                    }
+                }
+            },
+        }
+        // 组件上的slot 与 slot-scope
+        const ComponentD = {
+            template: `
+                <div>
+                    <slot name="header" v-bind:msg="msg"></slot>
+                </div>
+            `,
+            data() {
+                return {
+                    msg: 'hello'
+                }
+            }
+        }
+        new Vue({
+            el: '#app',
+            components: {
+                'component-a': ComponentA,
+                'component-b': ComponentB,
+                'component-c': ComponentC,
+                'component-d': ComponentD
+            }
+        });
+
+    </script>
+</body>
+
+</html>

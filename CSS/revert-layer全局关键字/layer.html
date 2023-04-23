@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>为了覆盖CSS,避免代码过长</title>
+    <style>
+        @layer {
+            .container .some-button {
+                height: 30px;
+            }
+            :any-link {
+                color: blue
+            }
+            :any-link:hover {
+                color: darkblue
+            }
+        }
+        /* 不必考虑优先级可以直接覆盖 */
+        .some-button {
+            height: 40px;
+        }
+        a {
+            color: deepskyblue
+        }
+        a:hover {
+            color: red;
+        }
+        /* layer之间的优先级 后面的优先级更高 */
+        @layer b1,b2;
+        @layer b1 {
+            .box {
+                width: 30px;
+                height: 30px;
+                background-color: black;
+            }
+        }
+        @layer b2 {
+            .box {
+                width: 40px;
+                height: 40px;
+                background-color: red;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="some-button"></button>
+        <a href="#">首页</a>
+        <div class="box"></div>
+    </div>
+</body>
+</html>

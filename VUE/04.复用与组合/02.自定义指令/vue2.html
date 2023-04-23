@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div v-say.foo.bar></div>
+        <input type="text" v-focus/>
+        <div v-demo="{color:'white',text: 'hello'}"></div>
+    </div>
+    <script>
+        // 全局自定义组件
+        Vue.directive('focus',{
+            // 当被绑定的元素插入到 DOM 中
+            inserted(el,bingding,vnode,oldVnode) {
+                el.focus();
+                console.log(el);
+                console.log(bingding);
+                console.log(vnode);
+                console.log(oldVnode);
+            }
+        });
+        // 简写，只需要在 bind 和 update 时触发相同行为而不关心其它的钩子
+        Vue.directive('demo',function(el,bingding) {
+            console.log(bingding.value.color);
+            console.log(bingding.value.text);
+        })
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue2'
+            },
+            // 局部注册指令
+            directives: {
+                say: {
+                    bind(el,bingding) {
+                        console.log('use local directives',bingding.modifiers);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

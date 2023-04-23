@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.6/prop-types.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Demo extends React.Component{
+            // 会返回一个容器，其中可以存储被ref标识的节点，但是该容器是专人专用的
+            myRef = React.createRef();
+            // 缺点是有多少创建多少
+            myRef2 = React.createRef();
+            showData = () => {
+                console.log(this.myRef.current.value);
+            }
+            showData2 = () => {
+                console.log(this.myRef2.current.value);
+                
+            }
+
+            render() {
+                return (
+                    <div>
+                        <input type="text" ref={this.myRef} placeholder="点击提示数据"/>&nbsp;&nbsp;
+                        <button onClick={this.showData}>点击我提示左边数据</button>&nbsp;&nbsp;
+                        <input type="text" ref={this.myRef2} onBlur={this.showData2} placeholder="失去焦点提示数据"/>&nbsp;&nbsp;
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(<Demo/>,document.getElementById('root'));
+    </script>
+</body>
+
+</html>

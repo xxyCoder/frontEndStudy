@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue3</title>
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+      </script>
+</head>
+
+<body>
+    <div id="app">
+        <my-component v-model="modelValue"></my-component>
+        <p>{{modelValue}}</p>
+        <other-component v-model="modelValue"></other-component>
+        <br>
+        <user-component v-model:first-name="firstName" v-model:last-name="lastName"></user-component>
+        <p>{{firstName}}</p>
+        <p>{{lastName}}</p>
+        <self-component v-model.capitalize="myText"></self-component>
+        {{myText}}
+    </div>
+    <script type="module">
+        import { createApp } from 'vue'
+
+        createApp({
+            data() {
+                return {
+                    modelValue: "",
+                    firstName: "",
+                    lastName: "",
+                    myText: ""
+                }
+            }
+        })
+        .component(
+            'MyComponent', {
+                props: ['modelValue'],
+                emits: ['update:modelValue'],
+                template: `
+                    <input :value="modelValue" @input="$emit('update:modelValue',$event.target.value)" />
+                `
+            }
+        )
+        .component(
+            'OtherComponent',{
+                props: ['modelValue'],
+                emits: ['update:modelValue'],
+                computed: {
+                    value: {
+                        get() {
+                            return this.modelValue;
+                        },
+                        set(newValue) {
+                            this.$emit('update:modelValue',newValue);
+                        }
+                    }
+                },
+                template: `
+                    <input v-model="value" />
+                `
+            }
+        )
+        .component(
+            'user-component', {
+                props: ['firstName','lastName'],
+                emits: ['update:firstName','update:lastName'],
+                template: `
+                    <input type="text" :value="firstName" @input="$emit('update:firstName',$event.target.value)" />
+                    <br/>
+                    <input type="text" :value="lastName" @input="$emit('update:lastName',$event.target.value)" />
+                `
+            }
+        )
+        // 自定义修饰符
+        .component(
+            'self-component', {
+                props: {
+                    modelValue: String,
+                    modelModifiers: {
+                        default: () => ({})
+                    }
+                },
+                emits: ['update:modelValue'],
+                methods: {
+                    emitValue(e) {
+                        let value = e.target.value;
+                        if(this.modelModifiers.capitalize) {
+                            value = value.charAt(0).toUpperCase() + value.slice(1);
+                        }
+                        this.$emit('update:modelValue',value);
+                    }
+                },
+                created() {
+                    console.log(this.modelModifiers);
+                },
+                template: `
+                    <input type="text" :value="modelValue" @input="emitValue" />
+                `
+            }
+        )
+        .mount('#app')
+    </script>
+
+</body>
+
+</html>

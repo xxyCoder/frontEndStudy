@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* @layer {
+            .revert-layer {
+                color: revert-layer;
+            }
+            .revert {
+                color: revert
+            }
+            .deepcolor {
+                color: deepskyblue;
+            }
+        } */
+        /* @layer base,special;
+
+        @layer special {
+            .revert-layer {
+                color: revert-layer;
+            }
+
+            .revert {
+                color: revert;
+            }
+
+            .deepcolor {
+                color: deepskyblue;
+            }
+        }
+
+        @layer base {
+            .revert-layer {
+                color: deeppink;
+            }
+
+            .revert {
+                color: deeppink;
+            }
+
+            .deepcolor {
+                color: deeppink;
+            }
+        } */
+
+        @layer outer {
+            .revert-layer {
+                color: revert-layer;
+            }
+
+            .revert {
+                color: revert;
+            }
+
+            .deepcolor {
+                color: deepskyblue;
+            }
+
+            @layer inner {
+                .revert-layer {
+                    color: deeppink;
+                }
+
+                .revert {
+                    color: deeppink;
+                }
+
+                .deepcolor {
+                    color: deeppink;
+                }
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <ul>
+        <li class="revert-layer">item1</li>
+        <li class="revert">item2</li>
+        <li class="deepcolor">item3</li>
+    </ul>
+</body>
+
+</html>

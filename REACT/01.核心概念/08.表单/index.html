@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>react</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root">
+    </div>
+    <script type="text/babel">
+        class NameForm extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    value: ''
+                };
+            }
+            handleChange = (event) => {
+                this.setState({
+                    value: event.target.value
+                });
+            }
+            handleSubmit = (event) => {
+                console.log('submit ' + this.state.value);
+                event.preventDefault();
+            }
+            render() {
+                return (
+                    <form onSubmit={this.handleSubmit}>
+                        <label>
+                            名字:
+                            <input type="text" value={this.state.value} onChange={this.handleChange} />
+                        </label>
+                        <input type="submit" value="提交" />
+                    </form>
+                )
+            }
+        }
+        class EssayForm extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    value: '6666'
+                };
+            }
+            handleChange = (event) => { this.setState({ value: event.target.value }); }
+            handleSubmit = (event) => {
+                alert('提交的文章: ' + this.state.value);
+                event.preventDefault();
+            }
+
+            render() {
+                return (
+                    <form onSubmit={this.handleSubmit}>
+                        <label>
+                            文章:
+                            <textarea value={this.state.value} onChange={this.handleChange} />        </label>
+                        <input type="submit" value="提交" />
+                    </form>
+                );
+            }
+        }
+        class FlavorForm extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { value: 'coconut' };
+                this.handleChange = this.handleChange.bind(this);
+                this.handleSubmit = this.handleSubmit.bind(this);
+            }
+
+            handleChange = (event) => { this.setState({ value: event.target.value }); }
+            handleSubmit = (event) => {
+                alert('你喜欢的风味是: ' + this.state.value);
+                event.preventDefault();
+            }
+
+            render() {
+                return (
+                    <form onSubmit={this.handleSubmit}>
+                        <label>
+                            选择你喜欢的风味:
+                            <select value={this.state.value} onChange={this.handleChange}>
+                                <option value="grapefruit">葡萄柚</option>
+                                <option value="lime">酸橙</option>
+                                <option value="coconut">椰子</option>
+                                <option value="mango">芒果</option>
+                            </select>
+                        </label>
+                        <input type="submit" value="提交" />
+                    </form>
+                );
+            }
+        };
+        class CheckBox extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    value: false,
+                    valueArr: []
+                };
+            }
+            handleChange = (event) => {
+                this.setState({
+                    value: event.target.checked
+                });
+            }
+            render() {
+                return (
+                    <form>
+                        <label>
+                            参与:
+                            <input type="checkbox" checked={this.state.value} onChange={this.handleChange} />
+                        </label>
+                    </form>
+                )
+            }
+        }
+        class Radio extends React.Component {
+            state = {
+                value: ''
+            }
+            handleChange = (event) => {
+                this.setState({
+                    value: event.target.value
+                });
+            }
+            render() {
+                return (
+                    <form>
+                        <label>
+                            男:
+                            <input type="radio" value='man' name='sex' checked={this.state.value === 'man'} onChange={this.handleChange} />
+                        </label>
+                        <label>
+                            女:
+                            <input type="radio" value="female" name='sex' checked={this.state.value === 'female'} onChange={this.handleChange} />
+                        </label>
+                    </form>
+                )
+            }
+        }
+        ReactDOM.render(
+            <div>
+                <NameForm />
+                <EssayForm />
+                <FlavorForm />
+                <CheckBox />
+                <Radio/>
+            </div>
+            , document.getElementById('root'));
+    </script>
+</body>
+
+</html>

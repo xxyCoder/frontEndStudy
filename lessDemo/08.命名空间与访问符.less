@@ -1,0 +1,18 @@
+#bundle() {
+    .button {
+        display: block;
+        border: 1px solid red;
+        &::after{
+            content: "";
+            background-color: white;
+        }
+    }
+    .table {
+        display: none;
+    }
+}
+
+#header a{
+    color: orange;
+    #bundle.button();
+}

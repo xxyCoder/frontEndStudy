@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue3</title>
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+      </script>
+</head>
+
+<body>
+    <div id="app">
+        {{message}}
+        <my-component></my-component>
+        <name-component></name-component>
+        <button @click="changeMessage">改变信息</button>
+    </div>
+    <script type="module">
+        import { createApp, computed } from 'vue'
+        createApp({
+            data() {
+                return {
+                    message: 'Hello Vue!'
+                }
+            },
+            methods: {
+                changeMessage() {
+                    this.message += '!';
+                    console.log(this.message);
+                }
+            },
+            provide() {
+                // 提供的数据不是响应式的,后代不会跟着改变
+                // return {
+                //     message: this.message
+                // }
+                // 提供一个计算属性
+                return {
+                    message: computed(() => this.message)
+                }
+            }
+        })
+            // 注入名 值
+            // .provide('message','hello')
+            .component(
+                'my-component', {
+                template: `
+                    <div>{{message}}</div>
+                `,
+                inject: ['message']
+            }
+            )
+            .component(
+                'name-component', {
+                template: `
+                    <div>
+                        <p>{{localMessage}}---{{user}}</p>
+                    </div>
+                `,
+                inject: {
+                    // 起别名
+                    localMessage: {
+                        from: 'message',
+                        default: 'hello Vue'    // 默认值
+                    },
+                    user: {
+                        default: () => ({ name: 'xxy' })  // 非基础类型需要函数工厂
+                    }
+                }
+            }
+            )
+            .mount('#app')
+    </script>
+
+</body>
+
+</html>

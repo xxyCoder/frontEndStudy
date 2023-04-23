@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <style>
+        .father {
+            height: 500px;
+            background-color: green;
+        }
+
+        .son1 {
+            height: 200px;
+            background-color: red;
+        }
+
+        .son2 {
+            height: 200px;
+            background-color: yellow;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" v-model="message1" />
+        <h2>message:{{message1}}</h2>
+        <input type="radio" v-model="pick" v-bind:value="a">
+        <h2>{{pick}}</h2>
+        <textarea v-model="message2"></textarea>
+        <h2>message: {{message2}}</h2>
+        <input type="checkbox" v-model="checked" />
+        <h2>{{checked}}</h2>
+        <!-- 值绑定 -->
+        <input type="checkbox" v-model="toggle" true-value="yes" false-value="no">
+        <h2>{{toggle}}</h2>
+        <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
+        <label for="jack">Jack</label>
+        <input type="checkbox" id="john" value="John" v-model="checkedNames">
+        <label for="john">John</label>
+        <input type="checkbox" id="mike" value="Mike" v-model="checkedNames">
+        <label for="mike">Mike</label>
+        <br>
+        <span>Checked names: {{ checkedNames }}</span>
+        <br />
+        <input type="radio" id="one" value="One" v-model="picked">
+        <label for="one">One</label>
+        <br>
+        <input type="radio" id="two" value="Two" v-model="picked">
+        <label for="two">Two</label>
+        <br>
+        <span>Picked: {{ picked }}</span>
+        <br>
+        <select v-model="selected">
+            <option disabled value="">请选择</option>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+            <!-- 值绑定 -->
+            <option value="d">D</option>
+        </select>
+        <span>Selected: {{ selected }}</span>
+        <br>
+        <select v-model="selectedarr" multiple style="width: 50px;">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+        </select>
+        <br>
+        <span>Selected: {{ selectedarr }}</span>
+    </div>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    message1: '',
+                    pick:'',
+                    a:'aaa',
+                    message2: '',
+                    checked: false,
+                    toggle:'no',
+                    checkedNames: [],
+                    picked: '',
+                    selected: '',
+                    selectedarr: []
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

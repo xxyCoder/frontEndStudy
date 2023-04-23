@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflect</title>
+</head>
+<body>
+    <script>
+        let obj = {
+            name:'xxy',
+            age: 21
+        }
+        let loggeObj = new Proxy(obj,{
+            get(target,name) {
+                console.log('get ' + name);
+                return Reflect.get(target,name);
+            },
+            deleteProperty(target,name) {
+                console.log('delete ' + name);
+                return Reflect.deleteProperty(target,name);
+            },
+            has(target,name) {
+                console.log('has ' + name);
+                return Reflect.has(target,name);
+            }
+        });
+        // get
+        let myObject = {
+            foo: 1,
+            bar: 2,
+            get baz() {
+                console.log(this);
+                return this.foo + this.bar;
+            },
+            set qwe(value) {
+                return this.bar = value;
+            }
+        };
+        let myReceiverObject = {
+            foo: 4,
+            bar: 4
+        };
+        console.log(Reflect.get(myObject,'baz',myReceiverObject));
+        console.log(Reflect.get(myObject,'baz'));
+        // set
+        console.log(Reflect.set(myObject,'qwe',4));
+        Reflect.set(myObject,'qwe',6,myReceiverObject);
+        console.log(myObject.bar);
+        console.log(myReceiverObject.bar);
+        // has
+        console.log(Reflect.has(myObject,'foo'));
+        // constructor 第一个参数必须是函数
+        console.log('-----------------------------');
+        function Greeting(name) {
+            this.name = name;
+        }
+        const instance = Reflect.construct(Greeting,['张三']);
+        console.log(instance);
+        // apply
+        const ages = [1,2,3,4,5,6];
+        // 旧写法
+        const oldest = Math.min.apply(Math,ages);
+        // 新写法
+        const newest = Reflect.apply(Math.min,Math,ages); 
+        // proxy 联合 reflect使用
+        // 前者拦截 后者赋值
+        obj = {
+            a: 'a'
+        };
+        let handler = {
+            set(target,key,value,receiver) {
+                console.log('reflect');
+                Reflect.set(target,key,value,receiver);
+            },
+            defineProperty(target,key,attribute) {
+                console.log('reflect');
+                Reflect.defineProperty(target,key,attribute);
+            }
+        };
+        let proxy = new Proxy(obj,handler);
+        proxy.a = 'b';
+    </script>
+</body>
+</html>

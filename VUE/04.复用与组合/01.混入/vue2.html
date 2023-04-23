@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        {{message}} --- {{date}}
+    </div>
+    <script>
+        // 定义混入对象
+        let myMixin = {
+            created() {
+                this.hello();
+            },
+            data() {
+                return {
+                    message: 'hello mixin',
+                    date: '2023/2/23'
+                }
+            },
+            methods: {
+                hello() {
+                    console.log('hello mixin');
+                }
+            }
+        };
+        // 全局注册
+        Vue.mixin({
+            created() {
+                console.log('hello global mixin');
+            }
+        });
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                message: 'Hello Vue2'
+            },
+            created() {
+                console.log('hello user')
+            },
+            // 局部使用
+            mixins: [myMixin]
+        });
+    </script>
+</body>
+
+</html>

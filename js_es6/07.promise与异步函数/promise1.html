@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>promise</title>
+</head>
+<body>
+    <script>
+        // 空promise
+        let p = new Promise(() => {});
+        setTimeout(console.log,0,p);
+        // resolve 状态
+        p = new Promise((resolve,reject) => resolve());
+        setTimeout(console.log,0,p);
+        // reject 状态
+        p = new Promise((resolve,reject) => reject());
+        setTimeout(console.log,0,p);
+        // 状态不可变
+        p = new Promise((resolve,reject) => {
+            resolve();
+            reject();
+        });
+        setTimeout(console.log,0,p);
+        // 静态方法
+        p = Promise.resolve(100);
+        setTimeout(console.log,0,p);
+        setTimeout(console.log,0,p === Promise.resolve(p));
+        setTimeout(console.log,0,'-----------------------');
+        p = Promise.reject(100);
+        setTimeout(console.log,0,p);
+        setTimeout(console.log,0,p === Promise.reject(p));
+        // then
+        setTimeout(console.log,0,'-----------------------');
+        function onResolve(id) {
+            setTimeout(console.log,0,'resolve');
+            setTimeout(console.log,0,id);
+        }
+        function onReject(id) {
+            setTimeout(console.log,0,'reject');
+            setTimeout(console.log,0,id);
+        }
+        p = new Promise((resolve,reject) => resolve(1000));
+        p.then()
+        .then(onResolve,onReject)
+        .then((val) => {
+            setTimeout(console.log,0,val);
+            return Promise.resolve(2000);
+        })
+        .then((val) => {
+            setTimeout(console.log,0,val);
+        })
+        p = new Promise((resolve,reject) => reject(10000));
+        p.then()
+        .then(null,onReject)
+        .then(null,(val) => {
+            setTimeout(console.log,0,val);
+        })
+        .then(() => {
+            setTimeout(console.log,0,'resolve');
+        },() => {
+            return Promise.reject(200000);
+        })
+        .then(null,(val) => {
+            setTimeout(console.log,0,val);
+        })
+        // finally
+        let p1 = Promise.resolve(666),p2 = Promise.reject(777);
+        function onFinally(val) {
+            setTimeout(console.log,0,'finally');
+            setTimeout(console.log,0,val);
+        }
+        p1.finally(onFinally);
+        // 传递性
+        p1 = Promise.resolve('foo');
+        p2 = p1.finally();
+        setTimeout(console.log,0,p2);
+        setTimeout(console.log,0,'--------');
+        p1 = new Promise((resolve,reject) => reject(3));
+        p1.then(null,(val) => {
+            console.log(val);
+        })
+        .then(() => {
+            console.log('1111111');
+        },() => {
+            console.log('22222222');
+        })
+    </script>
+</body>
+</html>

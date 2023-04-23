@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>get</title>
+</head>
+<button onclick="send()">获取数据</button>
+
+<body>
+    <script>
+        function send() {
+            // 初始化HTTP请求
+            let xhr = new XMLHttpRequest();
+            console.log(xhr);
+            // 定义请求,第三个参数表示是否开启异步，默认为true
+            xhr.open('GET', 'http://127.0.0.1:5555/网络请求/ajax/get.html', true);
+            // 跟踪请求状态改变
+            xhr.onreadystatechange = function () {
+                const DONE = 4; // readystate = 4 表示完成
+                const ok = 200;
+                if (xhr.readyState === DONE) {
+                    if (xhr.status === ok) {
+                        console.log(xhr);
+                    } else {
+                        console.log('Error' + xhr.status);
+                    }
+                }
+            }
+            // 发送给指定地方
+            xhr.send();
+        }
+    </script>
+</body>
+
+</html>

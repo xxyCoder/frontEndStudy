@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        <ul>
+            <li v-for="(item,idx) in items" :key="item.id">
+                {{item.message}} -- {{idx}} -- {{parentMessage}}
+            </li>
+        </ul>
+        <ol>
+            <li v-for="(value,attr,idx) of objs" :key="idx">
+                {{attr}} -- {{value}} -- {{idx}}
+            </li>
+        </ol>
+        <template v-for="n in 10">{{n}}</template>
+        <ul>
+            <li v-for="todo in todos" v-if="todo.isComplete" :key="todo.id">
+                {{todo.name}}
+                <input type="text" placeholder="enter your message"/>
+            </li>
+        </ul>
+        <input type="text" v-model:value="td" placeholder="enter your todo">
+        <button @click="submit">新增完成</button>
+    </div>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data: {
+                parentMessage: 'Hello',
+                items: [
+                    { message: 'Foo',id: '001'},
+                    { message: 'Bar',id: '002' }
+                ],
+                objs: {
+                    account: 'Vue',
+                    age: 10,
+                    [Symbol()]: 'Symbol'
+                },
+                nextId: 4,
+                td: '',
+                todos: [
+                    {id: '001',name: '吃饭',isComplete: false},
+                    {id: '002',name: '睡觉',isComplete: true},
+                    {id: '003',name: '敲代码',isComplete: true}
+                ]
+            },
+            methods: {
+                submit() {
+                    this.todos.unshift({id:'00' + this.nextId,name: this.td,isComplete: true});
+                    this.td = '';
+                    ++ this.nextId;
+                }
+            },
+        });
+    </script>
+</body>
+
+</html>

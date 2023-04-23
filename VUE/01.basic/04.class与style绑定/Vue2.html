@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <style>
+        .base {
+            background-color: green;
+        }
+        .active {
+            background-color: red;
+        }
+        .angry {
+            background-color: #000;
+            color: red;
+        }
+        .happy {
+            background-color: skyblue;
+            color: #fff;
+        }
+        .error {
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div v-bind:class="{active : isActive}">对象绑定1</div>
+        <button @click="changeStt">改变活力</button>
+        <div v-bind:class="clazzObj">对象绑定2</div>
+        <button @click="changeMood">改变心情</button>
+        <div v-bind:class="clazzComputed">计算属性绑定</div>
+        <hr/>
+        <div v-bind:class="[active,error]">数组绑定1</div>
+        <div v-bind:class="clazzArr">数组绑定2</div>
+        <div v-bind:class="[{active: isActive},error]">混合绑定</div>
+        <hr/>
+        <div v-bind:style="{color: 'red',fontSize: fontSize + 'px'}">绑定内联样式</div>
+    </div>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    isActive: true,
+                    clazzObj: {
+                        angry: true,
+                        happy: false
+                    },
+                    active: 'active',
+                    error: 'error',
+                    clazzArr: ['base','error'],
+                    fontSize: 40
+                }
+            },
+            methods: {
+                changeMood() {
+                    this.clazzObj.angry = !this.clazzObj.angry;
+                    this.clazzObj.happy = !this.clazzObj.happy;
+                },
+                changeStt() {
+                    this.isActive = !this.isActive;
+                }
+            },
+            computed: {
+                clazzComputed() {
+                    // 可以绑定一个对象，那么返回一个对象即可
+                    // 如果是绑定数组，返回一个数组即可
+                    return {
+                        active: this.isActive
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

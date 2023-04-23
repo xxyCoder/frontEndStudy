@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>get</title>
+</head>
+<button onclick="send()">获取数据</button>
+
+<body>
+    <script>
+        function send() {
+            fetch('send-ajax-data.php')
+                .then(response => response.json())
+                .then(json => console.log(json))
+                .catch(err => console.log('Request Failed', err));
+        }
+    </script>
+</body>
+
+</html>

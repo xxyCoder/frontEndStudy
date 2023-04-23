@@ -1,0 +1,9 @@
+#header a {
+  color: orange;
+  display: block;
+  border: 1px solid red;
+}
+#header a::after {
+  content: "";
+  background-color: white;
+}

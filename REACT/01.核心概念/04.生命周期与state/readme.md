@@ -1,0 +1,35 @@
+# state
+1. 是私有的，完全受控于当前组件
+2. 不要直接修改state，浅比较，不会重新渲染页面
+3. 修改数据使用setState
+4. 更新可能是异步的，React会将多个setState合并成一个调用
+    - 解决方法，让setState接收一个函数而非对象，第一个参数为state,第二个参数为props
+
+# 旧生命周期
+1. 初始化阶段
+    - constructor
+    - componentWillMount
+    - render
+    - componentDidMount
+2. 更新阶段
+    - shouldComponentUpdate
+    - componentWillUpdate
+    - render
+    - componentDidUpdate
+3. 卸载阶段
+    - componentWillUnmount
+
+# 新生命周期
+1. 初始化阶段
+    - consturctor
+    - getDerivedStateFromProps
+    - render
+    - componentDidMount
+2. 更新阶段
+    - getDerivedStateFromProps
+    - shouldComponentUpdate
+    - render
+    - getSnapshotBeforeUpdate
+    - componentDidUpdate
+3. 卸载组件
+    - componentWillUnmount

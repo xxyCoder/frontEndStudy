@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阮一峰老师es6之Iterator</title>
+</head>
+<body>
+    <script>
+        function makeIterator(arr) {
+            let idx = 0;
+            return {
+                next() {
+                    return idx < arr.length ? {value: arr[idx ++],done: false} : {value: undefined, done: true};
+                }
+            }
+        }
+        let it = makeIterator([1,2,3,4]);
+        for(let i = 0;i < [1,2,3,4].length;++ i) {
+            console.log(it.next());
+        }
+
+        // 获取迭代器
+        let arr = [1,2,3,4,5];
+        let iter = arr[Symbol.iterator]();
+        console.log(iter);
+        // 可选的return throw
+        function readLineSync() {
+            return {
+                [Symbol.iterator]() {
+                    return {
+                        next() {
+                            console.log('next...')
+                            return {done: false};
+                        },
+                        return() {
+                            console.log('return...');
+                            return {done: true};
+                        }
+                    }
+                }
+            }
+        }
+        for(let line of readLineSync()) {
+            console.log(line);
+            break;
+        }
+        for(let line of readLineSync()) {
+            console.log(line);
+            throw new Error('error');
+        }
+    </script>
+</body>
+</html>

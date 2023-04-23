@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Weather extends React.Component {
+            constructor(props) {
+                super(props)
+                this.state = {
+                    isHot: false
+                }
+                // console.log(this); 
+                // 将该函数挂在自身，避免取原型查找该函数使得this指向undefined
+                this.changeWeather = this.changeWeather.bind(this);
+            }
+            render() {
+                return <h1 onClick={this.changeWeather}>今天天气{this.state.isHot ? '炎热' : '凉爽'}</h1>
+            }
+            changeWeather() {
+                // this.state.isHot = !this.state.isHot;
+                // console.log(this);  // undefined
+                // 由于该函数作为回调，则不是通过实例调用而是直接调用
+                // 类中方法默认开启局部严格模式
+                // console.log(this);
+                // 不允许直接修改，没有响应式
+                // this.state.isHot = !this.state.isHot;
+                let isHot = this.state.isHot;
+                this.setState({
+                    isHot: !isHot
+                })
+            }
+        }
+
+        ReactDOM.render(<Weather />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>

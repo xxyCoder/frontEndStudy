@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue2</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+
+<body>
+    <div id="app">
+        <template v-if="ok">
+            <h1 v-if="op === 1">Now is one</h1>
+            <h1 v-else-if="op === 2">Now is two</h1>
+            <h1 v-else>Now is other</h1>
+            <button @click="++ op">+1</button>
+            <input type="text" placeholder="enter your username"/>
+        </template>
+        <template v-if="!ok">
+            <h1 v-if="op === 1">Now is 1</h1>
+            <h1 v-else-if="op === 2">Now is 2</h1>
+            <h1 v-else>Now is 其他</h1>
+            <button @click="++ op">+1</button>
+            <input type="email" placeholder="enter your email"/>
+        </template>
+        <!-- 对于input仅仅是替换了它的 placeholder与type -->
+        <button @click="ok = !ok">ok</button>
+        <div v-show="ok">ko!</div>
+    </div>
+    <script>
+        let vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    op: 1,
+                    ok: true
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

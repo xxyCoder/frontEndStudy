@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>react</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root">
+
+    </div>
+    <script type="text/babel">
+        function formatName(user) {
+            return user.firstName + '-' + user.lastName;
+        }
+        const user = {
+            firstName: 'React',
+            lastName: 'dom'
+        }
+        const id = 'container';
+        // const element = (
+        //     <div>
+        //         <h1 class="wrap" id={id}>Hello {formatName(user)}</h1>
+        //         <span>多级结构</span>
+        //     </div>
+        // )
+        const element = React.createElement(
+            'div',
+            null,
+            React.createElement(
+                'h1',
+                {class: 'wrap',id},
+                "Hello " + formatName(user)
+            ),
+            React.createElement(
+                'span',
+                null,
+                "多级结构"
+            )
+        );
+        ReactDOM.render(element,document.getElementById('root'));
+    </script>
+</body>
+
+</html>

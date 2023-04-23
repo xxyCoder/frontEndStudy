@@ -1,0 +1,20 @@
+// 算术运算符在加、减或比较之前会进行单位换算。计算的结果以最左侧操作数的单位类型为准。如果单位换算无效或失去意义，则忽略单位
+@conversion-1: 5cm + 10mm;
+@conversion-2: 2 - 3cm - 5mm;
+
+@incompatible-units: 2 + 5px - 3cm;
+
+@base: 5%;
+@fillter: @base * 2;
+// 乘法和除法不作转换。因为这两种运算在大多数情况下都没有意义
+@mul: 2cm * 3mm;
+@div: (#222222/2);
+
+#header {
+    height: @conversion-1;
+    width: @conversion-2;
+    margin: @incompatible-units;
+    padding: @fillter;
+    border-width: @mul;
+    background-color: @div;
+}

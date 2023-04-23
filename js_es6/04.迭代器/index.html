@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>迭代器</title>
+</head>
+<body>
+    <script>
+        let arr = ['foo','bar','baz'];
+        // 迭代器工厂函数
+        console.log(arr[Symbol.iterator]);
+        // 迭代器
+        let iter = arr[Symbol.iterator]();
+        console.log(iter);
+        // 返回对象
+        console.log(iter.next());
+        // 修改
+        arr.splice(1,0,'qwe');
+        console.log(iter.next());
+        // 实现迭代器
+        class Foo {
+            [Symbol.iterator]() {
+                // 返回一个对象,包含next方法
+                return {
+                    next() {
+                        return {
+                            done: false,
+                            value: 'foo'
+                        }
+                    }
+                }
+            }
+        }
+        let f = new Foo();
+        console.log(f[Symbol.iterator]());
+        // 自定义迭代器
+        class Counter {
+            constructor(limit = 1) {
+                this.count = 1;
+                this.limit = limit;
+            }
+            next() {
+                if(this.count <= this.limit) {
+                    return {done: false,value: this.count ++};
+                } 
+                else {
+                    return {done: true,value: undefined};
+                }
+            }
+            return() {
+                console.log('early');
+                return {done: true};
+            }
+            [Symbol.iterator]() {
+                return this;
+            }
+        }
+        let counter = new Counter(3);
+        // 调用Symbol.iterator方法
+        for(let i of counter) {
+            console.log(i);
+            if(i > 2) {
+                break;
+            }
+        }
+        let counter1 = new Counter(5);
+        let [a,b] = counter1;
+    </script>
+</body>
+</html>

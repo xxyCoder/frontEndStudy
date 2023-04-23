@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>react</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Clock extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { date: new Date(), cnt: 1 };
+            }
+            tick() {
+                this.setState({
+                    date: new Date()
+                });
+                this.setState((state, props) => {
+                    return {
+                        cnt: state.cnt + props.inc
+                    }
+                })
+            }
+            componentDidMount() {
+                this.timer = setInterval(() => this.tick(), 1000)
+            }
+            componentWillUnmount() {
+                clearInterval(this.timer);
+            }
+            render() {
+                return (
+                    <div>
+                        <h1>Hello Clock,{this.state.cnt}</h1>
+                        <h2>{this.state.date.toLocaleTimeString()}</h2>
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(<Clock inc={1} />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue3</title>
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+      </script>
+</head>
+
+<body>
+    <div id="app">
+        <my-component></my-component>
+    </div>
+    <script type="module">
+        import { createApp } from 'vue'
+        const app = createApp({});
+        // 全局注册
+        app.component(
+            'MyComponent', {
+                template:`<div>这里写组件的实现</div>`
+            }
+        );
+        app.mount('#app');
+    </script>
+
+</body>
+
+</html>

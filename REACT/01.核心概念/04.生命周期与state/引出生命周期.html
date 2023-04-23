@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Life extends React.Component {
+            state = {
+                opacity: 1,
+                time:null
+            };
+            death = () => {
+                // 卸载组件
+                ReactDOM.unmountComponentAtNode(document.getElementById('root'));
+            };
+            // 组件将要卸载
+            componentWillUnmount() {
+                clearInterval(this.state.time);
+            }
+            // 组件挂载完毕
+            componentDidMount() {
+                this.state.time = setInterval(() => {
+                    let { opacity } = this.state;
+                    opacity -= 0.1;
+                    if (opacity <= 0) opacity = 1;
+                    this.setState({ opacity })
+                }, 200);
+            }
+            render() {
+                return (
+                    <div>
+                        <h2 style={{ opacity: this.state.opacity }}>React...</h2>
+                        <button onClick={this.death}>删除</button>
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(<Life />, document.getElementById('root'));
+    </script>
+</body>
+
+</html>

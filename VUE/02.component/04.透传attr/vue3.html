@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue3</title>
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+      </script>
+    <style>
+        .btn1 {
+            background-color: green;
+            color: white;
+        }
+        .btn2 {
+            background-color: red;
+            color: black
+        }
+        .box {
+            width: 700px;
+            height: 100px;
+            background-color: yellow;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <my-component class="btn2 box"></my-component>
+        <wrap-component class="box"></wrap-component>
+    </div>
+    <script type="module">
+        import { createApp } from 'vue'
+        createApp({
+            data() {
+                return {
+                    message: 'Hello Vue!'
+                }
+            }
+        })
+        .component(
+            'my-component',{
+                template: `
+                    <button class="btn1">click me {{$attrs}}</button>
+                `
+            }
+        )
+        .component(
+            'wrap-component',{
+                template: `
+                    <div>
+                        <button class="btn1" v-bind="$attrs">{{$attrs}} 1</button>
+                        <button class="btn1">{{$attrs}} 2</button>
+                    </div>
+                `,
+                inheritAttrs: false
+            }
+        )
+        .mount('#app')
+    </script>
+
+</body>
+
+</html>

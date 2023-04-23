@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>代理</title>
+</head>
+<body>
+    <script>
+        // 创建代理
+        let target = {
+            id: 'target'
+        };
+        let handler = {};
+        let proxy = new Proxy(target,handler);
+        // 访问同一个值
+        console.log(target.id === proxy.id);
+        // 区别两者
+        console.log(target === proxy,target == proxy);
+        // 定义捕获器
+        handler = {
+            get() {
+                return 'proxy';
+            }
+        }
+        proxy = new Proxy(target,handler);
+        console.log(target.id === proxy.id);
+        console.log(target.id,proxy.id);
+        console.log('----------------------');
+        // 捕获器参数
+        handler = {
+            get(trapTarget,property,receiver) {
+                console.log(trapTarget);
+                console.log(property);
+                // console.log(receiver);
+                return trapTarget[property];
+            }
+        }
+        proxy = new Proxy(target,handler);
+        console.log(proxy.id);
+        // proxy的实例方法
+        let validator = {
+            set(obj,prop,value,self) {
+                if(prop === 'age') {
+                    if(!Number.isInteger(value)) {
+                        throw new TypeError('error');
+                    } else if(value > 200) {
+                        throw new RangeError('error');
+                    }
+                }
+                obj[prop] = value;
+                return true;
+            }
+        }
+        target = {
+            name: 'xxy',
+            age: 21
+        };
+        proxy = new Proxy(target,handler);
+        target.age = 18;
+        console.log(proxy.age);
+        // 应用场景，防止外部访问不允许访问属性
+        handler = {
+            get(target,prop) {
+                check(prop);
+                return target[prop];
+            },
+            set(target,prop,value) {
+                check(prop);
+                target[prop] = value;
+                return true;
+            }
+        }
+        function check(key) {
+            if(key[0] === '_') {
+                throw new Error('can not visit');
+            }
+        } 
+        target = {
+            _age: 20,
+            name: 'xxy'
+        };
+        proxy = new Proxy(target,handler);
+        // proxy._age = 21;
+        console.log('----------------------');
+        handler = {
+            apply() {
+                return 'apply!';
+            }
+        };
+        target = function() {
+            return 'target!';
+        };
+        proxy = new Proxy(target,handler);
+        console.log(proxy());
+        console.log('----------------------');
+        handler = {
+            has(target,prop) {
+                console.log(prop);
+                if(prop[0] === '_') {
+                    return false;
+                }
+                return prop in target;
+            }
+        };
+        target = {
+            _age: 21,
+            name: 'xxy'
+        };
+        proxy = new Proxy(target,handler);
+        console.log('name' in proxy);
+        for(key in proxy) {
+            console.log(key,'#');
+        }
+        console.log('----------------------');
+        handler = {
+            construct(target,args,newTarget) {
+                // newTarget是创造对象实例时,new 命名作用的构造函数
+                console.log(newTarget);
+                console.log(target);
+                console.log(this === handler);
+                return new target(...args);
+            }
+        }
+        target = function() {};
+        proxy = new Proxy(target,handler);
+        new proxy();
+        console.log('----------------------');
+        handler = {
+            deleteProperty(target,prop) {
+                if(prop[0] === '_') {
+                    return false;
+                }
+                delete target[prop];
+                return true;
+            }
+        }
+        // this指向问题
+        target = {
+            m() {
+                console.log(this === proxy);
+            }
+        };
+        handler = {};
+        proxy = new Proxy(target,handler);
+        target.m();
+        proxy.m();
+        // 导致无法代理
+        const _name = new WeakMap();
+        class Person {
+            constructor(name) {
+                _name.set(this,name);
+            }
+            get name() {
+                return _name.get(this);
+            }
+        }
+        const jane = new Person('jane');
+        proxy = new Proxy(jane,{});
+        console.log(proxy.name);
+    </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字上中下</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            height: 100vh;
+        }
+        .box1 {
+            background-color: red;
+            text-align: center;
+            width: 150px;
+            height: 150px;
+        }
+        .box2 {
+            background-color: green;
+            width: 150px;
+            height: 150px;
+            display: flex;
+            justify-content: center;
+        }
+        .box2 > h3 {
+            align-self: center;
+        }
+        .box3 {
+            background-color: yellow;
+            height: 150px;
+            width: 150px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box1">
+            <h3>6666</h3>
+        </div>
+        <div class="box2">
+            <h3>6666</h3>
+        </div>
+        <div class="box3">
+            <h3>6666</h3>
+        </div>
+    </div>
+</body>
+</html>

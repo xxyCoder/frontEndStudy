@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>异步的promise</title>
+</head>
+<body>
+    <script>
+        let syncFun;
+        let p = new Promise(resolve => {
+            syncFun = function() {
+                console.log(1);
+                resolve();
+                console.log(2);
+            };
+        });
+        p.then(() => console.log(4));
+        p.finally(() => console.log(5));
+        syncFun();
+        console.log(3);
+        // promise图
+        let A = new Promise((resolve,reject) => {
+            console.log('A');
+            resolve();
+        })
+        let B = A.then(() => console.log('B'));
+        let C = A.then(() => console.log('C'));
+        B.then(() => console.log('D'));
+        B.then(() => console.log('E'));
+        C.then(() => console.log('F'));
+        C.then(() => console.log('G'));
+        setTimeout(console.log,0,'------------');
+        // all
+        let p1 = Promise.all([Promise.resolve(1),Promise.resolve(2),Promise.resolve()]);
+        setTimeout(console.log,0,p1);
+        let p2 = Promise.all([1,2,3,4]); // 自动将数组内元素包成promise
+        setTimeout(console.log,0,p2);
+        let p3 = Promise.all([Promise.resolve(1),Promise.resolve(2),Promise.reject(3),Promise.reject(4)]);
+        setTimeout(console.log,0,p3);
+        let p4 = Promise.all([
+            new Promise((resolve,reject) => {
+                console.log('p4');
+                resolve();
+            }),
+            new Promise((resolve,reject) => {
+                console.log('p4');
+                resolve();
+            })
+        ])
+        setTimeout(console.log,0,'------------');
+        // race
+        p1 = Promise.race([Promise.resolve(1),Promise.resolve(4),Promise.reject(5)]);
+        setTimeout(console.log,0,p1)
+        p2 = Promise.race([2,3,4]); // 自动将数组内元素包成promise
+        setTimeout(console.log,0,p2);
+        p4 = Promise.race([
+            new Promise((resolve,reject) => {
+                console.log('p41');
+                resolve();
+            }),
+            new Promise((resolve,reject) => {
+                console.log('p41');
+                resolve();
+            })
+        ])
+    </script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>react</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root">
+    </div>
+    <script type="text/babel">
+        class Demo extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    isLogin: false
+                };
+            }
+            change = () => {
+                this.setState({
+                    isLogin: !this.state.isLogin
+                });
+            }
+            render() {
+                let element = null;
+                if (this.state.isLogin) {
+                    element = <h1 onClick={this.change}>Login</h1>
+                } else {
+                    element = <h1 onClick={this.change}>Register</h1>
+                }
+                return element;
+            }
+        }
+        ReactDOM.render(<Demo/>,document.getElementById('root'));
+    </script>
+</body>
+
+</html>

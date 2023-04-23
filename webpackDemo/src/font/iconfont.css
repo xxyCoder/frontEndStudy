@@ -1,0 +1,7 @@
+@font-face {
+    font-family: "站酷高端黑 Regular";
+    font-weight: 400;
+    src: url("//at.alicdn.com/wf/webfont/6ITTWGpenl4Q/3l7QPRIlgsbg.woff2") format("woff2"),
+        url("//at.alicdn.com/wf/webfont/6ITTWGpenl4Q/eXN71hwu2fGN.woff") format("woff");
+    font-display: swap;
+}

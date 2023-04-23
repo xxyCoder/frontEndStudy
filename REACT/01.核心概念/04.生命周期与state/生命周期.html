@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Life extends React.Component {
+            constructor(props) {
+                super(props);
+                console.log('constructor');
+            }
+            state = { cnt: 0 };
+            add = () => {
+                let { cnt } = this.state;
+                ++cnt;
+                this.setState({ cnt });
+            }
+            // 组件将要挂载的钩子
+            componentWillMount() {
+                console.log('componentWillMount');
+            }
+            // 组件挂载完成
+            componentDidMount() {
+                console.log('componentDidMount');
+            }
+            // 卸载回调
+            componentWillUnmount() {
+                console.log('componentWillUnmount')
+            }
+            death = () => {
+                // 销毁钩子
+                ReactDOM.unmountComponentAtNode(document.getElementById('root'));
+            }
+            // 控制组件更新的阀门
+            // 只能返回true或false
+            // 不给这个函数默认有一个函数返回true
+            shouldComponentUpdate() {
+                console.log('shouldComponentUpdate');
+                return true;
+            }
+            // 将要更新
+            componentWillUpdate() {
+                console.log('componentWillUpdate');
+
+            }
+            // 强制更新，比正常更新少了一步，不会走 控制更新的阀门
+            // 强制更新钩子
+            force = () => {
+                this.forceUpdate();
+            }
+            render() {
+                console.log('render')
+                const { cnt } = this.state;
+                return (
+                    <div>
+                        <h2>当前值为{cnt}</h2>
+                        <button onClick={this.add}>点我加1</button>&nbsp;&nbsp;
+                        <button onClick={this.death}>点我删除</button>&nbsp;&nbsp;
+                        <button onClick={this.force}>不更改数据强制更新</button>
+                    </div>
+                )
+            }
+            // 更新完成
+            componentDidUpdate() {
+                console.log('componentDidUpdate');
+            }
+        };
+
+        class A extends React.Component {
+            state = {carName:'bc'};
+            changeCar = () => {
+                this.setState({
+                    carName:'bm'
+                });
+            }
+            render() {
+                return (
+                    <div>
+                        <div>A</div>
+                        <button onClick={this.changeCar}>换车</button>
+                        <B carName={this.state.carName}/>
+                    </div>
+                )
+            }
+        };
+        class B extends React.Component {
+            // 组件将要接收新的props的钩子
+            componentWillReceiveProps() {
+                console.log('componentWillReceiveProps'); 
+            }
+            shouldComponentUpdate() {
+                console.log('B:shouldComponentUpdate');
+                return true;
+            }
+            componentWillUpdate() {
+                console.log('B:componentWillUpdate');
+
+            }
+            render() {
+                console.log('B:render');
+                return (
+                    <div>B,车为{this.props.carName}</div>
+                    
+                )
+            }
+        }
+        ReactDOM.render(<A/>, document.getElementById('root'));
+    </script>
+</body>
+
+</html>

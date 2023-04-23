@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>列表默认最多显示3项,点击更多按钮显示剩余列表项</title>
+    <style>
+        li:nth-child(n+4) {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="ul">
+        <li>选项1</li>
+        <li>选项2</li>
+        <li>选项3</li>
+        <li>选项4</li>
+        <li>选项5</li>
+    </ul>
+    <p><button id="b1">更多</button></p>
+
+    <script>
+        let b1 = document.getElementById('b1');
+        let lis = document.getElementById('ul').children;
+        // console.log(lis);
+        b1.addEventListener('click',function() {
+            for(let i = 3;i < lis.length;++ i) {
+                lis[i].style.display = 'revert';    // list-item 过于难记，可以使用revert变为默认
+            }
+        })
+    </script>
+</body>
+
+</html>

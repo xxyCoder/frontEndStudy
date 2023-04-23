@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>vue3</title>
+	<script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+      </script>
+</head>
+
+<body>
+	<div id="app">
+		email: <input v-model="e" type="text"/><br/>
+		password: <input v-model="p" type="password"/><br/>
+		<button @click="submitForm(e,p)">提交</button>
+	</div>
+	<script type="module">
+		import { createApp } from 'vue'
+		const app = createApp({
+			data() {
+				return {
+					e: "",
+					p: ""
+				};
+			},
+			emits: {
+				// 没有检查
+				click: null,
+				// 有检查
+				submit: ({ email, password }) => {
+					if (email && password) {
+						console.log('vaild');
+						return true;
+					} else {
+						console.log("Invaild");
+						return false;
+					}
+				}
+			},
+			methods: {
+				submitForm(email,password) {
+					this.$emit('submit',{email,password});
+					this.e = "";
+					this.p = "";
+				}
+			},
+		});
+		app.mount('#app');
+	</script>
+
+</body>
+
+</html>

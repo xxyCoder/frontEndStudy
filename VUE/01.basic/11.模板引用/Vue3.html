@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>vue3</title>
+    <script type="importmap">
+        {
+          "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          }
+        }
+      </script>
+</head>
+
+<body>
+    <div id="app">
+        <input type="text" ref="input"/>
+        <ul>
+            <li v-for="item in list" :key="item.id" ref="items">
+                {{item.name}}
+            </li>
+        </ul>
+        <input @blur="show" type="text" :ref="(el) => {this.input1 = el}"/>
+    </div>
+    <script type="module">
+        import { createApp } from 'vue'
+        createApp({
+            data() {
+                return {
+                    list: [
+                        {id: '001',name:'message1'},
+                        {id: '002',name:'message2'},
+                        {id: '003',name:'message3'}
+                    ]
+                }
+            },
+            methods: {
+                show() {
+                    console.log(this.input1)
+                }
+            },
+            mounted() {
+                console.log(this.$refs);
+                console.log(this.$refs.input);   
+                console.log(this.$refs.items);  
+                console.log(this.$refs.input1);   
+            }
+        }).mount('#app')
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/prop-types@15.6/prop-types.min.js"></script>
+</head>
+
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        class Demo extends React.Component {
+            showData = () => {
+                const {ip1} = this.refs;
+                console.log(ip1.value);
+            }
+            showData2 = () => {
+                const {ip2} = this.refs;
+                console.log(ip2.value);
+            }
+            render() {
+                console.log(this);
+                return (
+                    <div>
+                        <input ref="ip1" type="text" placeholder="点击按钮提示数据" />&nbsp;&nbsp;
+                        <button onClick={this.showData}>点我提示左侧数据</button>&nbsp;&nbsp;
+                        <input ref="ip2" onBlur={this.showData2} type="text" placeholder="失去焦点提示数据" />
+                    </div>
+                )
+            }
+        }
+        ReactDOM.render(<Demo />,document.getElementById('root'));
+    </script>
+</body>
+
+</html>

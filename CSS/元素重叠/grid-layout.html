@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用grid布局实现</title>
+    <style>
+        figure {
+            display: inline-grid;
+        }
+        figure>img,
+        figure>figcaption {
+            /* 均占用第一个格子 */
+            grid-area: 1 / 1 / 2 / 2;   
+        }
+
+        figure>figcaption {
+            align-self: end;
+            text-align: center;
+            background-color: #0009;
+            color: #fff;
+            line-height: 2;
+        }
+    </style>
+</head>
+
+<body>
+    <figure>
+        <img src="../public/8558463.jpg" alt="">
+        <figcaption>联想桌面壁纸</figcaption>
+    </figure>
+</body>
+
+</html>

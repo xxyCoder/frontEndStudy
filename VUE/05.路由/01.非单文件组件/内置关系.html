@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+</head>
+
+<body>
+    <div id="root">
+        <school></school>
+    </div>
+    <script>
+        Vue.prototype.x = 99;
+        const school = Vue.extend({
+            template:`
+                <div>
+                    <h2>学校名字:{{name}}</h2>
+                    <h3>学校地址:{{address}}</h3>
+                    <button @click="showX">x</button>
+                </div>
+            `,
+            data() {
+                return {
+                    name: 'sgg',
+                    address: 'China'
+                }
+            },
+            methods: {
+                showX() {
+                    console.log(this.x);      
+                }
+            }
+        });
+        const vm = new Vue({
+            el: '#root',
+            components: {
+                school
+            }
+        });
+        console.log(school.prototype.__proto__ === Vue.prototype);
+    </script>
+</body>
+
+</html>

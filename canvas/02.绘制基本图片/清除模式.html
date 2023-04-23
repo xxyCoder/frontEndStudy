@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="c1" width="400" height="400"></canvas>
+    <script>
+        let c1 = document.getElementById('c1');
+        let ctx = c1.getContext('2d');
+        // 绘制路径(x,y,width,height)
+        ctx.strokeRect(100,100,200,200)
+        ctx.fillRect(200,150,200,200);
+        // 全部清除 (x,y,width,height)
+        ctx.clearRect(0,0,400,400);
+    </script>
+</body>
+</html>

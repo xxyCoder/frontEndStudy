@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="c1" width="600" height="400"></canvas>
+    <script>
+        // 1. 找到画布
+        let c1 = document.getElementById('c1');
+        // 2. 获取画笔，即上下文对象，普通元素没有上下文 
+        let ctx = c1.getContext('2d');
+        // 3. 绘制图形
+        // 3.1 绘制矩形 (位置x，位置y，宽度，高度)
+        ctx.fillRect(100,200,300,300)
+    </script>
+</body>
+</html>

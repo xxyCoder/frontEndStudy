@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.2/echarts.min.js"></script>
+    <style>
+        #app {
+            width: 600px;
+            height: 600px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 1. 准备一个具备大小的DOM容器 -->
+    <div id="app"></div>
+    <script>
+        // 2. 初始化echarts对象
+        let myChart = echarts.init(document.getElementById('app'))
+        // 3. 指定配置和数据
+        let option = {}
+        // 4. 将配置和数据给echarts实例对象
+        myChart.setOption(option);
+    </script>
+</body>
+
+</html>

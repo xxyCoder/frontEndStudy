@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.2/echarts.min.js"></script>
+    <style>
+        #app {
+            width: 600px;
+            height: 600px;
+            background-color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <script>
+        let myChart = echarts.init(document.getElementById('app'))
+        let option = {
+            tooltip: {
+                color: ["#2f89cf"], // 修改颜色 
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            grid: { // 修改大小
+                left: '0%',
+                top: '10px',
+                right: '0%',
+                bottom: '4%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    axisTick: {
+                        alignWithLabel: true
+                    },
+                    axisLabel: {    // 修改刻度标签样式
+                        color: 'red',
+                        fontSize: '12'
+                    },
+                    axisLine: { // 修改坐标轴
+                        show: false // 不显示坐标轴
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value',
+                    axisLabel: {
+                        color: 'rgba(255,255,255,.6)',
+                        fontSize: '12'
+                    },
+                    axisLine: {
+                        lineStyle: {    // 修改坐标轴
+                            color: 'rgba(255,255,255,.1)',
+                            width: 2
+                        }
+                    },
+                    splitLine: {    // 修改分割线
+                        lineStyle: {
+                            color: 'rgba(255,255,255,.1)'
+                        }
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: 'Direct',
+                    type: 'bar',
+                    barWidth: '35%',
+                    data: [10, 52, 200, 334, 390, 330, 220],
+                    itemStyle: {
+                        barBorderRadius: 5  // 修改柱子圆角
+                    }
+                }
+            ]
+        };
+        myChart.setOption(option);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="app" width="600" height="600"></canvas>
+    <script>
+        let c1 = document.getElementById('app');
+        const ctx = c1.getContext('2d');
+        // 画一张脸，即一个圆
+        ctx.beginPath();
+        ctx.arc(75,75,50,0,Math.PI * 2);
+        
+        // 画嘴
+        ctx.moveTo(110,75);
+        ctx.arc(75,75,35,0,Math.PI);
+        // 画左眼
+        ctx.moveTo(65,65);
+        ctx.arc(60,65,5,0,Math.PI * 2);
+        // 画右眼
+        ctx.moveTo(95,65);
+        ctx.arc(90,65,5,0,Math.PI * 2);
+        ctx.stroke();
+        ctx.closePath();
+    </script>
+</body>
+</html>

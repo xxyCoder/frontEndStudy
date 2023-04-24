@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="app" width="600" height="600"></canvas>
+    <script>
+        let c1 = document.getElementById('app');
+        const ctx = c1.getContext('2d');
+        // 圆形(x,y,r,开始的角度,结束的角度,逆时针还是顺时针)   默认顺时针false
+        ctx.arc(300,200,50,0,Math.PI / 2,true);
+        ctx.stroke();
+    </script>
+</body>
+</html>

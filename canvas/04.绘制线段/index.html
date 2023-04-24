@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="app" width="600" height="600"></canvas>
+    <script>
+        let c1 = document.getElementById('app');
+        const ctx = c1.getContext('2d');
+        ctx.beginPath();
+        ctx.moveTo(300,200);
+        // 绘制一条从当前位置到指定 x 以及 y 位置的直线
+        ctx.lineTo(350,250);
+        ctx.stroke();
+        ctx.closePath();
+    </script>
+</body>
+</html>

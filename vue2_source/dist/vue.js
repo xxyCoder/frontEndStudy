@@ -4,6 +4,33 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Vue = factory());
 })(this, (function () { 'use strict';
 
+  function _iterableToArrayLimit(arr, i) {
+    var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"];
+    if (null != _i) {
+      var _s,
+        _e,
+        _x,
+        _r,
+        _arr = [],
+        _n = !0,
+        _d = !1;
+      try {
+        if (_x = (_i = _i.call(arr)).next, 0 === i) {
+          if (Object(_i) !== _i) return;
+          _n = !1;
+        } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0);
+      } catch (err) {
+        _d = !0, _e = err;
+      } finally {
+        try {
+          if (!_n && null != _i.return && (_r = _i.return(), Object(_r) !== _r)) return;
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+      return _arr;
+    }
+  }
   function _typeof(obj) {
     "@babel/helpers - typeof";
 
@@ -35,8 +62,27 @@
     });
     return Constructor;
   }
-  function _readOnlyError(name) {
-    throw new TypeError("\"" + name + "\" is read-only");
+  function _slicedToArray(arr, i) {
+    return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest();
+  }
+  function _arrayWithHoles(arr) {
+    if (Array.isArray(arr)) return arr;
+  }
+  function _unsupportedIterableToArray(o, minLen) {
+    if (!o) return;
+    if (typeof o === "string") return _arrayLikeToArray(o, minLen);
+    var n = Object.prototype.toString.call(o).slice(8, -1);
+    if (n === "Object" && o.constructor) n = o.constructor.name;
+    if (n === "Map" || n === "Set") return Array.from(o);
+    if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);
+  }
+  function _arrayLikeToArray(arr, len) {
+    if (len == null || len > arr.length) len = arr.length;
+    for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i];
+    return arr2;
+  }
+  function _nonIterableRest() {
+    throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
   }
   function _toPrimitive(input, hint) {
     if (typeof input !== "object" || input === null) return input;
@@ -71,7 +117,8 @@
 
     var ELEMENT_TYPE = 1;
     var TEXT_TYPE = 3;
-    var top;
+    var stack = [];
+    var top, root;
     function createASTElement(tag, attrs) {
       return {
         tag: tag,
@@ -85,11 +132,16 @@
     // 最终需要转换成一颗抽象语法树
     function start(tag, attrs) {
       var node = createASTElement(tag, attrs);
+      if (!root) {
+        // 如果是空树，那么将当前节点当作根节点
+        root = node;
+      }
       if (top) {
         // 父子节点双向记住
         node.parent = top;
         top.children.push(node);
       }
+      stack.push(node);
       top = node;
     }
     function chars(text) {
@@ -102,7 +154,8 @@
       });
     }
     function end(tag) {
-      top = (_readOnlyError("stack"));
+      stack.pop();
+      top = stack[stack.length - 1];
     }
     function advance(n) {
       html = html.substring(n);
@@ -156,11 +209,97 @@
         }
       }
     }
+    return root;
+  }
+
+  function genProps(attrs) {
+    // 属性是一个数组
+    var str = '';
+    var _loop = function _loop() {
+      var attr = attrs[i]; // {name,value};
+      if (attr.name === 'style') {
+        // 对于style属性需要在外面加一个大括号  style: {color: 'red'};
+        var obj = {};
+        attr.value.split(';').forEach(function (item) {
+          var _item$split = item.split(':'),
+            _item$split2 = _slicedToArray(_item$split, 2),
+            key = _item$split2[0],
+            val = _item$split2[1];
+          obj[key] = val;
+        });
+        attr.value = obj;
+      }
+      str += "".concat(attr.name, ":").concat(JSON.stringify(attr.value), ",");
+    };
+    for (var i = 0; i < attrs.length; ++i) {
+      _loop();
+    }
+    // 去掉多余逗号
+    return "{".concat(str.slice(0, -1), "}");
+  }
+  function genChildren(children) {
+    if (children) {
+      return children.map(function (child) {
+        return gen(child);
+      }).join(',');
+    }
+  }
+  function gen(node) {
+    if (node.type === 1) {
+      return codegen(node);
+    } else if (node.type === 3) {
+      // 对于文本属性，需要判断是否带有变量，没有带变量直接返回
+      var text = node.text;
+      var defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g;
+      if (!defaultTagRE.test(text)) {
+        // 不带变量文本 
+        return "_v(".concat(JSON.stringify(text), ")");
+      } else {
+        defaultTagRE.lastIndex = 0; // 去掉全局匹配，避免exec无法继续匹配
+        var tokens = [],
+          match,
+          lastIndex = 0;
+        while (match = defaultTagRE.exec(text)) {
+          var index = match.index; // 匹配的位置
+          if (index > lastIndex) {
+            tokens.push(JSON.stringify(text.slice(lastIndex, index)));
+          }
+          tokens.push("_s(".concat(match[1].trim(), ")"));
+          lastIndex = index + match[0].length;
+        }
+        if (lastIndex < text.length) {
+          // 拿到剩余不带变量的字符
+          tokens.push(JSON.stringify(text.slice(lastIndex)));
+        }
+        return "_v(".concat(tokens.join('+'), ")");
+      }
+    }
+  }
+  function codegen(ast) {
+    var children = genChildren(ast.children);
+    // 生成对应标签
+    var code = "_c('".concat(ast.tag, "',").concat(ast.attrs.length > 0 ? genProps(ast.attrs) : 'null').concat(ast.children.length ? ",".concat(children) : '', ")");
+    return code;
   }
   function compileToFunction(template) {
     // 将template 转换成ast语法树
-    parseHTML(template);
+    var ast = parseHTML(template);
     // 生成render函数 （执行后获得虚拟DOM）
+    var code = codegen(ast);
+    code = "with(this) {return ".concat(code, "}"); // 为了取变量的值，将作用域改变
+    var render = new Function(code);
+    return render;
+  }
+
+  function initLifycycle(Vue) {
+    Vue.prototype._update = function () {};
+    Vue.prototype._render = function () {};
+  }
+  function mountComponent(vm, el) {
+    // 1. 调用render方法产生虚拟DOM
+    vm._update(vm._render());
+    // 2. 根据虚拟DOM产生真实DOM
+    // 3. 插入到el元素中
   }
 
   // 重写部分方法
@@ -336,7 +475,7 @@
           ops.render = render;
         }
       }
-      ops.render;
+      mountComponent(vm); // 挂载实例
     };
   }
 
@@ -345,6 +484,7 @@
     this._init(options);
   }
   initMixin(Vue); // 扩展init方法
+  initLifycycle(Vue);
 
   return Vue;
 

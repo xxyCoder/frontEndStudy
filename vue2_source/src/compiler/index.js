@@ -1,124 +1,69 @@
-// 对模板进行编译处理
-// 标签名 a-aaa
-const ncname = `[a-zA-Z_][\\-\\.0-9_a-zA-Z]*`;
-// 命名空间标签 aa:aa-xxx
-const qnameCapture = `((?:${ncname}\\:)?${ncname})`;
-// 开始标签-捕获标签名
-const startTagOpen = new RegExp(`^<${qnameCapture}`);
-// 结束标签-匹配标签结尾的 </div>
-const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`);
-// 匹配属性
-const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
-// 匹配标签结束的 >
-const startTagClose = /^\s*(\/?)>/;
-// 匹配 {{ }} 表达式
-const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g;
+import { parseHTML } from "./parse";
 
-function parseHTML(html) {  // 对于vue2来说，一开始一定是<
-
-    const ELEMENT_TYPE = 1;
-    const TEXT_TYPE = 3;
-    const stack = [];
-    let top,root;
-
-    function createASTElement(tag,attrs) {
-        return {
-            tag,
-            type: ELEMENT_TYPE,
-            children: [],
-            attrs,
-            parent: null
-        };
-    }
-
-    // 最终需要转换成一颗抽象语法树
-    function start(tag,attrs) {
-        let node = createASTElement(tag,attrs);
-        if(!root) { // 如果是空树，那么将当前节点当作根节点
-            root = node;
+function genProps(attrs) {  // 属性是一个数组
+    let str = '';
+    for(let i = 0;i < attrs.length;++ i) {
+        let attr = attrs[i];    // {name,value};
+        if(attr.name === 'style') { // 对于style属性需要在外面加一个大括号  style: {color: 'red'};
+            let obj = {};
+            attr.value.split(';').forEach(item => {
+                const [key,val] = item.split(':');
+                obj[key] = val;
+            });
+            attr.value = obj;
         }
-        if(top) {   // 父子节点双向记住
-            node.parent = top;
-            top.children.push(node);
-        }
-        stack.push(node);
-        top = node;
+        str += `${attr.name}:${JSON.stringify(attr.value)},`;
     }
+    // 去掉多余逗号
+    return `{${str.slice(0,-1)}}`;
+}
 
-    function chars(text) {  
-        text = text.replace(/\s/g,'');
-        text && top.children.push({ // 文本直接放到当前节点中
-            type: TEXT_TYPE,
-            text,
-            parent: top
-        });
+function genChildren(children) {
+    if(children) {
+        return children.map(child => gen(child)).join(',');
     }
+}
 
-    function end(tag) {
-        let node = stack.pop();
-        if(node !== tag) {  // 校验是否合法
-            // todo...
-        }
-        top = stack = stack[stack.length - 1];
-    }
-
-    function advance(n) {
-        html = html.substring(n);
-    }
-
-    function parseStartTag() {
-        const start = html.match(startTagOpen);
-        if (start) {
-            const match = {
-                tagName: start[1],
-                attrs: []
+function gen(node) {
+    if(node.type === 1) {
+        return codegen(node);
+    } else if(node.type === 3) {    // 对于文本属性，需要判断是否带有变量，没有带变量直接返回
+        let text = node.text;
+        const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g;
+        if(!defaultTagRE.test(text)) {  // 不带变量文本 
+            return `_v(${JSON.stringify(text)})`;
+        } else {
+            defaultTagRE.lastIndex = 0; // 去掉全局匹配，避免exec无法继续匹配
+            let tokens = [],match,lastIndex = 0;
+            while(match = defaultTagRE.exec(text)) {
+                let index = match.index;    // 匹配的位置
+                if(index > lastIndex) {
+                    tokens.push(JSON.stringify(text.slice(lastIndex,index)));
+                }
+                tokens.push(`_s(${match[1].trim()})`);
+                lastIndex = index + match[0].length;
             }
-            advance(start[0].length);   // 截取，才好继续匹配后面的内容\
-            // 如果不是结束标签就一直匹配
-            let attr, end;
-            while (!(end = html.match(startTagClose)) && (attr = html.match(attribute))) {
-                advance(attr[0].length);
-                match.attrs.push({name: attr[1],value: attr[3] || attr[4] || attr[5]});
+            if(lastIndex < text.length) {   // 拿到剩余不带变量的字符
+                tokens.push(JSON.stringify(text.slice(lastIndex)));
             }
-            if (end) {
-                advance(end[0].length);
-            }
-            return match;
-        }
-
-
-        return false;   // 不是开始标签
-    }
-
-    while (html) {
-        // textEnd = 0,说明是一个开始标签或结束标签 <div>   ></div>
-        // textEnd > 0,说明是文本的结束位置 xxxx</div>
-        let textEnd = html.indexOf('<');
-        if(textEnd == 0) {
-            const startTagMatch = parseStartTag();
-            if(startTagMatch) {
-                start(startTagMatch.tagName,startTagMatch.attrs);
-                continue;
-            }
-            let endTagMatch = html.match(endTag);
-            if(endTagMatch) {
-                advance(endTagMatch[0].length);
-                end(endTagMatch[1]);
-                continue;
-            }
-        }
-        else if(textEnd > 0) {  
-            let text = html.substring(0,textEnd);   // 文本内容
-            if(text) {
-                chars(text);
-                advance(text.length);
-            }
+            return `_v(${tokens.join('+')})`;
         }
     }
+}
+
+function codegen(ast) {
+    let children = genChildren(ast.children);
+    // 生成对应标签
+    let code = (`_c('${ast.tag}',${ast.attrs.length > 0? genProps(ast.attrs) : 'null'}${ast.children.length? `,${children}` : ''})`);
+    return code;
 }
 
 export function compileToFunction(template) {
     // 将template 转换成ast语法树
     let ast = parseHTML(template);
     // 生成render函数 （执行后获得虚拟DOM）
+    let code = codegen(ast);
+    code = `with(this) {return ${code}}`;   // 为了取变量的值，将作用域改变
+    let render = new Function(code);
+    return render;
 }

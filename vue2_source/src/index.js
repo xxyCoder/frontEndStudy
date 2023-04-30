@@ -1,5 +1,5 @@
 import { initMixin } from "./init";
-import { initLifycycle } from "./lifecycle";
+import { initLifycycle, mountComponent } from "./lifecycle";
 
 // 不使用类是因为不如函数方便添加功能
 function Vue(options) {

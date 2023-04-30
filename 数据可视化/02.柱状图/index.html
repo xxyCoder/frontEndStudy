@@ -13,15 +13,22 @@
             height: 600px;
             background-color: blue;
         }
+
+        #box {
+            width: 600px;
+            height: 600px;
+            background-color: green;
+        }
     </style>
 </head>
 
 <body>
     <div id="app"></div>
+    <div id="box"></div>
     <script>
         let myChart = echarts.init(document.getElementById('app'))
         let option = {
-            tooltip: {
+            tooltip: {  // 提示框
                 color: ["#2f89cf"], // 修改颜色 
                 trigger: 'axis',
                 axisPointer: {
@@ -84,6 +91,97 @@
             ]
         };
         myChart.setOption(option);
+
+        let myColor = ['#1089e7', '#f57474', '#56d0e3', '#f8b448', '#8b78f6','#ccc'];
+        let myChartBox = echarts.init(document.getElementById('box'));
+        let optionBox = {
+            title: {
+                text: 'World Population'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {},
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                show: false // 不显示x轴
+            },
+            yAxis: [
+                {
+                    type: 'category',
+                    data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World'],
+                    axisLine: {
+                        show: false // 不显示y轴线
+                    },
+                    axisTick: {
+                        show: false // 不显示y轴刻度
+                    },
+                    axisLabel: {
+                        color: "#fff"   // 修改标签颜色
+                    }
+                },
+                {
+                    show: true,
+                    data: [702,350,610,793,664,666],
+                    axisLine: {
+                        show: false
+                    },
+                    axisTick: {
+                        show: false
+                    },
+                    axisLabel: {
+                        textStyle: {
+                            fontSize: 12,
+                            color: '#fff'
+                        }
+                    }
+                }
+            ],
+            series: [
+                {
+                    name: '条',
+                    type: 'bar',
+                    data: [18203, 23489, 29034, 104970, 131744, 630230],
+                    itemStyle: {    // 修改柱子圆角
+                        barBorderRadius: 20,
+                        color: function (params) {
+                            return myColor[params.dataIndex];
+                        }
+                    },
+                    barCategoryGap: 50, // 柱子间距离
+                    barWidth: 10,    // 柱子宽度
+                    label: {    // 显示柱子的文字
+                        show: true,
+                        position: "inside", // 图形内显示
+                        formatter: "{c}%"   // {c}会自动解析为数据 data里面的数据
+                    },
+                    yAxisIndex: 0,
+                },
+                {
+                    name: '框',
+                    type: 'bar',
+                    data: [19325, 23438, 31000, 121594, 134141, 681807],
+                    barCategoryGap: 50,
+                    barWidth: 15,
+                    itemStyle: {
+                        color: "none",
+                        borderColor: "#00c1de",
+                        borderWidth: 3,
+                        barBorderRadius: 15
+                    },
+                    yAxisIndex: 1
+                }
+            ]
+        };
+        myChartBox.setOption(optionBox);
     </script>
 </body>
 

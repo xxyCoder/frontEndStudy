@@ -291,6 +291,73 @@
     return render;
   }
 
+  var id$1 = 0;
+  var Dep = /*#__PURE__*/function () {
+    function Dep() {
+      _classCallCheck(this, Dep);
+      this.id = id$1++;
+      this.subs = []; // 存放当前属性对应的watcher有那些
+    }
+    _createClass(Dep, [{
+      key: "depend",
+      value: function depend() {
+        // this.subs.push(Dep.target);
+        Dep.target.addDep(this); // 让watcher记住dep
+      }
+    }, {
+      key: "addSub",
+      value: function addSub(watcher) {
+        this.subs.push(watcher);
+      }
+    }, {
+      key: "notify",
+      value: function notify() {
+        this.subs.forEach(function (watcher) {
+          return watcher.update();
+        });
+      }
+    }]);
+    return Dep;
+  }();
+  Dep.target = null; // 如何将watcher和dep关联？暴露一个全局属性
+
+  var id = 0;
+  var Watcher = /*#__PURE__*/function () {
+    function Watcher(vm, fn, options) {
+      _classCallCheck(this, Watcher);
+      this.id = id++; // 不同组件有不同watcher，故使用id标识
+      this.renderWatcher = options; // 是一个渲染watcher
+      this.getter = fn; // 调用该函数可以发送取值
+      this.deps = []; // 实现计算属性和清理工作
+      this.depsId = new Set(); // 去重，避免重复放置dep
+      this.get();
+    }
+    _createClass(Watcher, [{
+      key: "addDep",
+      value: function addDep(dep) {
+        var id = dep.id;
+        if (!this.depsId.has(id)) {
+          this.deps.push(dep);
+          this.depsId.add(id);
+          dep.addSub(this);
+        }
+      }
+    }, {
+      key: "get",
+      value: function get() {
+        Dep.target = this;
+        this.getter();
+        Dep.target = null;
+      }
+    }, {
+      key: "update",
+      value: function update() {
+        this.get();
+      }
+    }]);
+    return Watcher;
+  }();
+
   // h()
   function createElementVNode(vm, tag, data) {
     var _data;
@@ -384,7 +451,11 @@
   function mountComponent(vm, el) {
     vm.$el = el;
     // 1. 调用render方法产生虚拟DOM
-    vm._update(vm._render());
+    var updateComponent = function updateComponent() {
+      vm._update(vm._render());
+    };
+    var w = new Watcher(vm, updateComponent, true); // true标识渲染过程
+    console.log(w);
     // 2. 根据虚拟DOM产生真实DOM
     // 3. 插入到el元素中
   }
@@ -470,8 +541,13 @@
   }();
   function defineReactive(target, key, value) {
     observe(value); // 对所有对象的属性进行劫持 使用递归
+    var dep = new Dep();
     Object.defineProperty(target, key, {
       get: function get() {
+        if (Dep.target) {
+          dep.depend(); // 让这个属性收集器记住当前的watcher
+        }
+
         return value;
       },
       set: function set(newValue) {
@@ -480,9 +556,11 @@
           return;
         }
         value = newValue;
+        dep.notify(); // 更新后通知，重新渲染
       }
     });
   }
+
   function observe(data) {
     if (_typeof(data) !== 'object' || data == null) {
       return; // 只对对象进行劫持

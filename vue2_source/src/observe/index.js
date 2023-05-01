@@ -1,4 +1,5 @@
 import { newArrayProto } from "./array";
+import Dep from "./dep";
 
 // 对于数组来说，不推荐使用索引当作key来劫持，存在a[10000] = 1这种写法，那么劫持非常耗费性能
 class Observe {
@@ -32,8 +33,12 @@ class Observe {
 
 export function defineReactive(target, key, value) {
     observe(value); // 对所有对象的属性进行劫持 使用递归
+    let dep = new Dep();
     Object.defineProperty(target, key, {
         get() {
+            if(Dep.target) {
+                dep.depend();   // 让这个属性收集器记住当前的watcher
+            }
             return value;
         },
         set(newValue) {
@@ -41,6 +46,7 @@ export function defineReactive(target, key, value) {
                 return;
             }
             value = newValue;
+            dep.notify();   // 更新后通知，重新渲染
         }
     })
 }

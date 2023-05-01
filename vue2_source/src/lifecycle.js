@@ -1,3 +1,4 @@
+import Watcher from "./observe/watcher.js";
 import { createElementVNode, createTextVNode } from "./vdom/index.js";
 
 function createElm(vnode) {
@@ -62,7 +63,11 @@ export function initLifycycle(Vue) {
 export function mountComponent(vm,el) {
     vm.$el = el;
     // 1. 调用render方法产生虚拟DOM
-    vm._update(vm._render());
+    const updateComponent = () => {
+        vm._update(vm._render());
+    };
+    const w = new Watcher(vm,updateComponent,true);   // true标识渲染过程
+    console.log(w);
     // 2. 根据虚拟DOM产生真实DOM
     // 3. 插入到el元素中
 }

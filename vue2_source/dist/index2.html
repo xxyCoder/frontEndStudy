@@ -9,9 +9,10 @@
 </head>
 
 <body>
-    <div id="app" style="background-color: red;width: 300px;">
+    <div id="app" style="background-color: red;height: 300px;">
         {{ name }} --- {{ age }} ----
         <span>hello world</span>
+        <strong>{{ fav }}</strong>
     </div>
     <script src="./vue.js"></script>
     <script>
@@ -33,6 +34,8 @@
         
         // 模板引擎 需要正则匹配
         // 将模板变成JS语法
+        vm.fav.push(111);
+        console.log(vm.fav);
     </script>
 </body>
 

@@ -35,13 +35,14 @@ function patch(oldVNode,VNode) {
         let newElm = createElm(VNode);
         parentElm.insertBefore(newElm,elm.nextSibling);
         parentElm.removeChild(elm); // 删除老节点
+        return newElm;
     }
 }
 
 export function initLifycycle(Vue) {
     Vue.prototype._update = function(vnode) {
         const vm = this,el = vm.$el;
-        patch(el,vnode);    // 既有初始化的功能，又有更新的功能
+        vm.$el = patch(el,vnode);    // 既有初始化的功能，又有更新的功能
     };
     // _c(tag,{},child)
     Vue.prototype._c = function() {
@@ -66,8 +67,7 @@ export function mountComponent(vm,el) {
     const updateComponent = () => {
         vm._update(vm._render());
     };
-    const w = new Watcher(vm,updateComponent,true);   // true标识渲染过程
-    console.log(w);
+    new Watcher(vm,updateComponent,true);   // true标识渲染过程
     // 2. 根据虚拟DOM产生真实DOM
     // 3. 插入到el元素中
 }

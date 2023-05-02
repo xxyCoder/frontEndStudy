@@ -37,6 +37,7 @@ methods.forEach(method => {
             // 调用方法的this是Observe 中传入的data，故可以在data上将Observe实例挂载上去
             ob.observeArray(inserted);
         }
+        ob.dep.notify();    // 通知更新
         return res;
     }
 })

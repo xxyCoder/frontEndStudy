@@ -287,6 +287,7 @@
     // 生成render函数 （执行后获得虚拟DOM）
     var code = codegen(ast);
     code = "with(this) {return ".concat(code, "}"); // 为了取变量的值，将作用域改变
+    console.log(code);
     var render = new Function(code);
     return render;
   }
@@ -352,11 +353,82 @@
     }, {
       key: "update",
       value: function update() {
+        // 异步更新
+        queueWatcher(this); // 把当前watcher暂存
+      }
+    }, {
+      key: "run",
+      value: function run() {
         this.get();
       }
     }]);
     return Watcher;
   }();
+  var queue = [];
+  var hasW = new Set();
+  var pending = false; // 防抖
+
+  function flushSchedulerQueue() {
+    var flushQueue = queue.slice(0);
+    pending = false;
+    queue = [];
+    hasW.clear();
+    flushQueue.forEach(function (q) {
+      return q.run();
+    });
+  }
+  function queueWatcher(watcher) {
+    var id = watcher.id;
+    if (!hasW.has(id)) {
+      queue.push(watcher);
+      hasW.add(id);
+      if (!pending) {
+        nextTick(flushSchedulerQueue);
+        pending = true;
+      }
+    }
+  }
+  var callbacks = []; // 维护nextTick的回调方法，避免多个nextTick要开启多个定时器
+  var waiting = false;
+  function flushCallback() {
+    var cbs = callbacks.slice(0);
+    waiting = false;
+    callbacks = [];
+    cbs.forEach(function (cb) {
+      return cb();
+    });
+  }
+  var timerFn;
+  if (Promise) {
+    timerFn = function timerFn() {
+      Promise.resolve().then(flushCallback);
+    };
+  } else if (MutationObserver) {
+    var observer = MutationObserver(flushCallback);
+    var textNode = document.createTextNode(1);
+    observer.observer(textNode, {
+      characterData: true
+    });
+    timerFn = function timerFn() {
+      textNode.textContent = 2;
+    };
+  } else if (setImmediate) {
+    timerFn = function timerFn() {
+      setImmediate(flushCallback);
+    };
+  } else {
+    timerFn = function timerFn() {
+      setTimeout(flushCallback);
+    };
+  }
+  function nextTick(cb) {
+    callbacks.push(cb);
+    if (!waiting) {
+      timerFn();
+      // Promise.resolve().then(flushCallback);
+      waiting = true;
+    }
+  }
 
   // h()
   function createElementVNode(vm, tag, data) {
@@ -422,14 +494,14 @@
       var newElm = createElm(VNode);
       parentElm.insertBefore(newElm, elm.nextSibling);
       parentElm.removeChild(elm); // 删除老节点
+      return newElm;
     }
   }
-
   function initLifycycle(Vue) {
     Vue.prototype._update = function (vnode) {
       var vm = this,
         el = vm.$el;
-      patch(el, vnode); // 既有初始化的功能，又有更新的功能
+      vm.$el = patch(el, vnode); // 既有初始化的功能，又有更新的功能
     };
     // _c(tag,{},child)
     Vue.prototype._c = function () {
@@ -454,8 +526,7 @@
     var updateComponent = function updateComponent() {
       vm._update(vm._render());
     };
-    var w = new Watcher(vm, updateComponent, true); // true标识渲染过程
-    console.log(w);
+    new Watcher(vm, updateComponent, true); // true标识渲染过程
     // 2. 根据虚拟DOM产生真实DOM
     // 3. 插入到el元素中
   }
@@ -494,6 +565,7 @@
         // 调用方法的this是Observe 中传入的data，故可以在data上将Observe实例挂载上去
         ob.observeArray(inserted);
       }
+      ob.dep.notify(); // 通知更新
       return res;
     };
   });
@@ -502,6 +574,8 @@
   var Observe = /*#__PURE__*/function () {
     function Observe(data) {
       _classCallCheck(this, Observe);
+      this.dep = new Dep(); // 给所有对象都新增dep
+
       if (Array.isArray(data)) {
         // this是Observe的实例,同时给数据加标识，如果有属性表示该数据被监测过
         // data.__ob__ = this;
@@ -539,15 +613,28 @@
     }]);
     return Observe;
   }();
+  function dependArray(value) {
+    for (var i = 0; i < value.length; ++i) {
+      value[i].__ob__ && value[i].__ob__.dep.depend();
+      if (Array.isArray(value[i])) {
+        dependArray(value[i]);
+      }
+    }
+  }
   function defineReactive(target, key, value) {
-    observe(value); // 对所有对象的属性进行劫持 使用递归
+    var childOb = observe(value); // 对所有对象的属性进行劫持 使用递归
     var dep = new Dep();
     Object.defineProperty(target, key, {
       get: function get() {
         if (Dep.target) {
           dep.depend(); // 让这个属性收集器记住当前的watcher
+          if (childOb) {
+            childOb.dep.depend();
+            if (Array.isArray(value)) {
+              dependArray(value);
+            }
+          }
         }
-
         return value;
       },
       set: function set(newValue) {
@@ -563,6 +650,7 @@
 
   function observe(data) {
     if (_typeof(data) !== 'object' || data == null) {
+      // typeof null = object 历史遗留问题
       return; // 只对对象进行劫持
     }
     // 还需要判断一个对象是否被劫持过，劫持过就不需要重复劫持了，故需要添加一个实例来判断
@@ -576,6 +664,7 @@
     // 将数据拿出来，进行数据劫持
     var ops = vm.$options;
     if (ops.data) {
+      // 如果给了数据
       initData(vm);
     }
   }
@@ -595,7 +684,7 @@
   function initData(vm) {
     var data = vm.$options.data; // 在vue2中，可能是函数也可能是对象
     data = typeof data === 'function' ? data.call(vm) : data; // 是函数就执行，不是则直接赋值
-    vm._data = data; // 跟踪data
+    vm._data = data; // 跟踪data，因为data被单独拿出来了，data被监听或是其他的vm不知道
     // 数据劫持，vue2使用了defineProperty
     observe(data); // 此处修改data在Vue上体现不出，需要定义_data = data
     // 将vm._data 使用vm代理，因为用户访问数据使用vm._data较为麻烦
@@ -650,6 +739,7 @@
   }
   initMixin(Vue); // 扩展init方法
   initLifycycle(Vue);
+  Vue.prototype.$nextTick = nextTick;
 
   return Vue;
 

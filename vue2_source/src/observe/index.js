@@ -4,6 +4,8 @@ import Dep from "./dep";
 // 对于数组来说，不推荐使用索引当作key来劫持，存在a[10000] = 1这种写法，那么劫持非常耗费性能
 class Observe {
     constructor(data) {
+        this.dep = new Dep();   // 给所有对象都新增dep
+        
         if (Array.isArray(data)) {
             // this是Observe的实例,同时给数据加标识，如果有属性表示该数据被监测过
             // data.__ob__ = this;
@@ -31,13 +33,28 @@ class Observe {
     }
 }
 
+function dependArray(value) {
+    for(let i = 0;i < value.length;++ i) {
+        value[i].__ob__ && value[i].__ob__.dep.depend();
+        if(Array.isArray(value[i])) {
+            dependArray(value[i]);
+        }
+    }
+}
+
 export function defineReactive(target, key, value) {
-    observe(value); // 对所有对象的属性进行劫持 使用递归
+    let childOb = observe(value); // 对所有对象的属性进行劫持 使用递归
     let dep = new Dep();
     Object.defineProperty(target, key, {
         get() {
             if(Dep.target) {
                 dep.depend();   // 让这个属性收集器记住当前的watcher
+                if(childOb) {
+                    childOb.dep.depend();
+                    if(Array.isArray(value)) {
+                        dependArray(value);
+                    }
+                }
             }
             return value;
         },
@@ -52,7 +69,7 @@ export function defineReactive(target, key, value) {
 }
 
 export function observe(data) {
-    if (typeof data !== 'object' || data == null) {
+    if (typeof data !== 'object' || data == null) { // typeof null = object 历史遗留问题
         return;    // 只对对象进行劫持
     }
     // 还需要判断一个对象是否被劫持过，劫持过就不需要重复劫持了，故需要添加一个实例来判断

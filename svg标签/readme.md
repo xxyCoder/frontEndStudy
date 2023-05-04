@@ -43,3 +43,26 @@
         L (LineTo) 绘制执行
         大写表示绝对定位，表示相对屏幕，小写表示相对定位，相对上一次点的位置
         q 绘制贝塞尔二次曲线 后面根控制点坐标 终点
+# 添加特殊效果
+1. <filter></filter>
+2. id属性，必需
+3. filter要在defs标签中定义
+    <defs>
+        <filter id></filter>
+    </defs>
+- 高斯模糊
+    1. <feGaussianBlur/>
+    2. stdDeviation=""  值越大，越模糊
+- 阴影效果
+    1. <feOffset dx="" dy="" in=""/>
+    2. dx dy 表示阴影在x y 轴偏移量
+    3. in 阴影图像来源  SourceAlpha使用黑色作为阴影 SourceGraphic使用原始颜色作为阴影
+- 混合图像
+    1. <feBlend in="sourceGraphic"/>
+- 渐变
+    1. <linearGradient x1="" y1="" x2="" y2=""><linearGradient>
+    2. (x1,y1) (x2,y2) 定义线性渐变的开始和结束位置
+    3. 每种颜色使用stop表示
+        1. <stop/>
+        2. offset 定义渐变颜色的开始和结束位置 相对位置的百分比
+        3. stop-color 渐变颜色

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        {{ fullname }} -- {{ firstname }} -- {{ fullname }}
+    </div>
+    <script>
+        // 实现计算属性
+        // 有缓存
+        // 计算属性也是defineProperty
+        // 计算属性也是个watcher
+        const vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    firstname: 'xy',
+                    lastname: 'x'
+                }
+            },
+            computed: {
+                fullname: {
+                    get() {
+                        console.log('computed');
+                        return this.lastname + this.firstname;
+                    },
+                    set(newvalue) {
+                        console.log(newvalue);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

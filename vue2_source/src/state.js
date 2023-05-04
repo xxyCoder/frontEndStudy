@@ -1,4 +1,5 @@
 import { observe } from "./observe/index.js";
+import Watcher from "./observe/watcher.js";
 
 export function initState(vm) {
     // 将数据拿出来，进行数据劫持
@@ -6,7 +7,9 @@ export function initState(vm) {
     if(ops.data) {  // 如果给了数据
         initData(vm);
     }
-
+    if(ops.computed) {  // 如果有计算属性
+        initComputed(vm);
+    }
 }
 function proxy(vm,target,key) {
     Object.defineProperty(vm,key,{
@@ -30,5 +33,33 @@ function initData(vm) {
     // 将vm._data 使用vm代理，因为用户访问数据使用vm._data较为麻烦
     for(let key in data) {
         proxy(vm,'_data',key);
+    }
+}
+function initComputed(vm) {
+    const watchers = vm._computedWatchers = {}; // 即计算属性watcher保存在vm上
+    const computed = vm.$options.computed;
+    for(let key in computed) {
+        let userDef = computed[key];
+        const getter = typeof userDef === 'function' ? userDef : userDef.get;
+        
+        watchers[key] = new Watcher(vm,getter,{lazy: true});    // 将属性和watcher对应
+        defineComputed(vm,key,userDef);
+    }
+}
+function defineComputed(target,key,userDef) {
+    const setter = userDef.set || (() => {});
+    Object.defineProperty(target,key,{
+        get: createComputedGetter(key),
+        set: setter
+    });
+}
+function createComputedGetter(key) { // 检测是否执行，即缓存结果
+    return function() { // this是target 即vm
+        const watcher = this._computedWatchers[key];
+        if(watcher.dirty) {
+            // 如果是脏的 调用用户getter
+            watcher.evaluate();
+        }
+        return watcher.value;
     }
 }

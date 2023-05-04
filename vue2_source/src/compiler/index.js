@@ -64,7 +64,6 @@ export function compileToFunction(template) {
     // 生成render函数 （执行后获得虚拟DOM）
     let code = codegen(ast);
     code = `with(this) {return ${code}}`;   // 为了取变量的值，将作用域改变
-    console.log(code);
     let render = new Function(code);
     return render;
 }

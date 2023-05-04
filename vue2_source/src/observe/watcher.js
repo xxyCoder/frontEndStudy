@@ -1,4 +1,4 @@
-import Dep from "./dep";
+import Dep, { popTarget, pushTarget } from "./dep";
 
 let id = 0;
 
@@ -9,7 +9,10 @@ class Watcher {
         this.getter = fn;   // 调用该函数可以发送取值
         this.deps = []; // 实现计算属性和清理工作
         this.depsId = new Set(); // 去重，避免重复放置dep
-        this.get();
+        this.lazy = options.lazy;
+        this.dirty = this.lazy
+        this.vm = vm;  
+        if(!this.lazy)    this.get();
     }
     addDep(dep) {
         let id = dep.id;
@@ -19,10 +22,15 @@ class Watcher {
             dep.addSub(this);
         }
     }
+    evaluate() {
+        this.value = this.get();    // 获取计算属性getter返回值
+        this.dirty = false;
+    }
     get() {
-        Dep.target = this;
-        this.getter();
-        Dep.target = null;
+        pushTarget(this);
+        const res = this.getter.call(this.vm);
+        popTarget();
+        return res;
     }
     update() {  // 异步更新
         queueWatcher(this); // 把当前watcher暂存

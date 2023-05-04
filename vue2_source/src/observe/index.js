@@ -49,9 +49,10 @@ export function defineReactive(target, key, value) {
         get() {
             if(Dep.target) {
                 dep.depend();   // 让这个属性收集器记住当前的watcher
-                if(childOb) {
+                if(childOb) {   // 让数组和对象本身也进行依赖收集
                     childOb.dep.depend();
                     if(Array.isArray(value)) {
+                        console.log(value);
                         dependArray(value);
                     }
                 }

@@ -287,7 +287,6 @@
     // 生成render函数 （执行后获得虚拟DOM）
     var code = codegen(ast);
     code = "with(this) {return ".concat(code, "}"); // 为了取变量的值，将作用域改变
-    console.log(code);
     var render = new Function(code);
     return render;
   }
@@ -322,6 +321,16 @@
   }();
   Dep.target = null; // 如何将watcher和dep关联？暴露一个全局属性
 
+  var stack = [];
+  function pushTarget(watcher) {
+    stack.push(watcher);
+    Dep.target = watcher;
+  }
+  function popTarget() {
+    stack.pop();
+    Dep.target = stack[stack.length - 1];
+  }
+
   var id = 0;
   var Watcher = /*#__PURE__*/function () {
     function Watcher(vm, fn, options) {
@@ -331,7 +340,10 @@
       this.getter = fn; // 调用该函数可以发送取值
       this.deps = []; // 实现计算属性和清理工作
       this.depsId = new Set(); // 去重，避免重复放置dep
-      this.get();
+      this.lazy = options.lazy;
+      this.dirty = this.lazy;
+      this.vm = vm;
+      if (!this.lazy) this.get();
     }
     _createClass(Watcher, [{
       key: "addDep",
@@ -344,11 +356,18 @@
         }
       }
     }, {
+      key: "evaluate",
+      value: function evaluate() {
+        this.value = this.get(); // 获取计算属性getter返回值
+        this.dirty = false;
+      }
+    }, {
       key: "get",
       value: function get() {
-        Dep.target = this;
-        this.getter();
-        Dep.target = null;
+        pushTarget(this);
+        var res = this.getter.call(this.vm);
+        popTarget();
+        return res;
       }
     }, {
       key: "update",
@@ -629,8 +648,10 @@
         if (Dep.target) {
           dep.depend(); // 让这个属性收集器记住当前的watcher
           if (childOb) {
+            // 让数组和对象本身也进行依赖收集
             childOb.dep.depend();
             if (Array.isArray(value)) {
+              console.log(value);
               dependArray(value);
             }
           }
@@ -667,6 +688,10 @@
       // 如果给了数据
       initData(vm);
     }
+    if (ops.computed) {
+      // 如果有计算属性
+      initComputed(vm);
+    }
   }
   function proxy(vm, target, key) {
     Object.defineProperty(vm, key, {
@@ -691,6 +716,37 @@
     for (var key in data) {
       proxy(vm, '_data', key);
     }
+  }
+  function initComputed(vm) {
+    var watchers = vm._computedWatchers = {}; // 即计算属性watcher保存在vm上
+    var computed = vm.$options.computed;
+    for (var key in computed) {
+      var userDef = computed[key];
+      var getter = typeof userDef === 'function' ? userDef : userDef.get;
+      watchers[key] = new Watcher(vm, getter, {
+        lazy: true
+      }); // 将属性和watcher对应
+      defineComputed(vm, key, userDef);
+    }
+  }
+  function defineComputed(target, key, userDef) {
+    var setter = userDef.set || function () {};
+    Object.defineProperty(target, key, {
+      get: createComputedGetter(key),
+      set: setter
+    });
+  }
+  function createComputedGetter(key) {
+    // 检测是否执行，即缓存结果
+    return function () {
+      // this是target 即vm
+      var watcher = this._computedWatchers[key];
+      if (watcher.dirty) {
+        // 如果是脏的 调用用户getter
+        watcher.evaluate();
+      }
+      return watcher.value;
+    };
   }
 
   function initMixin(Vue) {

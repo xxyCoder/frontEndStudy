@@ -16,4 +16,14 @@ class Dep {
     }
 }
 Dep.target = null;  // 如何将watcher和dep关联？暴露一个全局属性
+
+let stack = [];
+export function pushTarget(watcher) {
+    stack.push(watcher);
+    Dep.target = watcher;
+}
+export function popTarget() {
+    stack.pop();
+    Dep.target = stack[stack.length - 1];
+}
 export default Dep;

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <div id="app">
+        {{ firstname }} -- {{ lastname }} --- {{ age }}
+    </div>
+    <script>
+        // 实现watch
+        const vm = new Vue({
+            el: '#app',
+            data() {
+                return {
+                    firstname: 'xy',
+                    lastname: 'x',
+                    age: 21
+                }
+            },
+            methods: {
+                fn(newValue,oldValue) {
+                    console.log('method');S
+                }
+            },
+            watch: {
+                firstname: [
+                    (newValue,oldValue) => {
+                        console.log(oldValue,'--->',newValue);
+                    },
+                    (newValue,oldValue) => {
+                        console.log('watch second');
+                    }
+                ],
+                age: 'fn'
+            }
+        });
+        vm.$watch(() => vm.lastname,(newValue,oldValue) => {
+            console.log('$watch');
+        })
+
+        setTimeout(() => {
+            vm.firstname = '666';
+            vm.lastname = '777';
+            // vm.age = 17;
+        },2000);
+    </script>
+</body>
+</html>

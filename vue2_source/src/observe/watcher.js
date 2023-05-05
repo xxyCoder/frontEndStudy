@@ -3,16 +3,24 @@ import Dep, { popTarget, pushTarget } from "./dep";
 let id = 0;
 
 class Watcher {
-    constructor(vm,fn,options) {
+    constructor(vm,expOrFn,options,cb) {
         this.id = id ++;    // 不同组件有不同watcher，故使用id标识
         this.renderWatcher = options;   // 是一个渲染watcher
-        this.getter = fn;   // 调用该函数可以发送取值
+        if(typeof expOrFn === 'string') {
+            this.getter = function() {
+                return vm[expOrFn];
+            }
+        } else {
+            this.getter = expOrFn;  // 调用该函数可以发送取值
+        }
         this.deps = []; // 实现计算属性和清理工作
         this.depsId = new Set(); // 去重，避免重复放置dep
         this.lazy = options.lazy;
+        this.cb = cb;
         this.dirty = this.lazy
         this.vm = vm;  
-        if(!this.lazy)    this.get();
+        this.user = options.user; // 标识是否是用户自己的watcher
+        this.value = this.lazy ? undefined : this.get();
     }
     addDep(dep) {
         let id = dep.id;
@@ -33,10 +41,25 @@ class Watcher {
         return res;
     }
     update() {  // 异步更新
-        queueWatcher(this); // 把当前watcher暂存
+        if(this.lazy) {
+            this.dirty = true;  // 依赖值发送变化，就标记变为脏值，但是没有重新渲染，故需要一个渲染watcher
+        } else {
+            queueWatcher(this); // 把当前watcher暂存
+        }
     }
     run() {
-        this.get();
+        let oldValue = this.value;
+        let newValue = this.get();
+        if(this.user) {
+            console.log(newValue,oldValue,'watcher');
+            this.cb.call(this.vm,newValue,oldValue);
+        }
+    }
+    depend() {
+        let i = this.deps.length;
+        while(i --) {
+            this.deps[i].depend(); 
+        }
     }
 }
 

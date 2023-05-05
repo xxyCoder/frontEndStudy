@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="app">
-        {{ fullname }} -- {{ firstname }} -- {{ fullname }}
+        {{ fullname }} --- {{ newName }}
     </div>
     <script>
         // 实现计算属性
@@ -33,9 +33,15 @@
                     set(newvalue) {
                         console.log(newvalue);
                     }
+                },
+                newName: function() {
+                    return this.firstname;
                 }
             }
         });
+        setTimeout(() => {
+            vm.firstname = '666';
+        },2000);
     </script>
 </body>
 </html>

@@ -1,3 +1,4 @@
+import Dep from "./observe/dep.js";
 import { observe } from "./observe/index.js";
 import Watcher from "./observe/watcher.js";
 
@@ -10,6 +11,28 @@ export function initState(vm) {
     if(ops.computed) {  // 如果有计算属性
         initComputed(vm);
     }
+    if(ops.watch) {
+        initWatch(vm);
+    }
+}
+function initWatch(vm) {
+    let watch = vm.$options.watch;
+    for(let key in watch) {
+        const handler = watch[key]; // 可以是字符串 数组 函数 
+        if(Array.isArray(handler)) {
+            for(let i = 0;i < handler.length;++ i) {
+                createWatcher(vm,key,handler[i]);
+            }
+        } else {
+            createWatcher(vm,key,handler);
+        }
+    }
+}
+function createWatcher(vm,key,handler) {
+    if(typeof handler === 'string') {
+        handler = vm[handler];
+    }
+    return vm.$watch(key,handler);
 }
 function proxy(vm,target,key) {
     Object.defineProperty(vm,key,{
@@ -59,6 +82,9 @@ function createComputedGetter(key) { // 检测是否执行，即缓存结果
         if(watcher.dirty) {
             // 如果是脏的 调用用户getter
             watcher.evaluate();
+        }
+        if(Dep.target) {    // 计算属性出栈后还要渲染watcher 要让计算属性收集上一层watcher
+            watcher.depend();
         }
         return watcher.value;
     }

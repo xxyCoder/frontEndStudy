@@ -333,17 +333,26 @@
 
   var id = 0;
   var Watcher = /*#__PURE__*/function () {
-    function Watcher(vm, fn, options) {
+    function Watcher(vm, expOrFn, options, cb) {
       _classCallCheck(this, Watcher);
       this.id = id++; // 不同组件有不同watcher，故使用id标识
       this.renderWatcher = options; // 是一个渲染watcher
-      this.getter = fn; // 调用该函数可以发送取值
+      if (typeof expOrFn === 'string') {
+        this.getter = function () {
+          return vm[expOrFn];
+        };
+      } else {
+        this.getter = expOrFn; // 调用该函数可以发送取值
+      }
+
       this.deps = []; // 实现计算属性和清理工作
       this.depsId = new Set(); // 去重，避免重复放置dep
       this.lazy = options.lazy;
+      this.cb = cb;
       this.dirty = this.lazy;
       this.vm = vm;
-      if (!this.lazy) this.get();
+      this.user = options.user; // 标识是否是用户自己的watcher
+      this.value = this.lazy ? undefined : this.get();
     }
     _createClass(Watcher, [{
       key: "addDep",
@@ -373,12 +382,29 @@
       key: "update",
       value: function update() {
         // 异步更新
-        queueWatcher(this); // 把当前watcher暂存
+        if (this.lazy) {
+          this.dirty = true; // 依赖值发送变化，就标记变为脏值，但是没有重新渲染，故需要一个渲染watcher
+        } else {
+          queueWatcher(this); // 把当前watcher暂存
+        }
       }
     }, {
       key: "run",
       value: function run() {
-        this.get();
+        var oldValue = this.value;
+        var newValue = this.get();
+        if (this.user) {
+          console.log(newValue, oldValue, 'watcher');
+          this.cb.call(this.vm, newValue, oldValue);
+        }
+      }
+    }, {
+      key: "depend",
+      value: function depend() {
+        var i = this.deps.length;
+        while (i--) {
+          this.deps[i].depend();
+        }
       }
     }]);
     return Watcher;
@@ -692,6 +718,28 @@
       // 如果有计算属性
       initComputed(vm);
     }
+    if (ops.watch) {
+      initWatch(vm);
+    }
+  }
+  function initWatch(vm) {
+    var watch = vm.$options.watch;
+    for (var key in watch) {
+      var handler = watch[key]; // 可以是字符串 数组 函数 
+      if (Array.isArray(handler)) {
+        for (var i = 0; i < handler.length; ++i) {
+          createWatcher(vm, key, handler[i]);
+        }
+      } else {
+        createWatcher(vm, key, handler);
+      }
+    }
+  }
+  function createWatcher(vm, key, handler) {
+    if (typeof handler === 'string') {
+      handler = vm[handler];
+    }
+    return vm.$watch(key, handler);
   }
   function proxy(vm, target, key) {
     Object.defineProperty(vm, key, {
@@ -745,6 +793,10 @@
         // 如果是脏的 调用用户getter
         watcher.evaluate();
       }
+      if (Dep.target) {
+        // 计算属性出栈后还要渲染watcher 要让计算属性收集上一层watcher
+        watcher.depend();
+      }
       return watcher.value;
     };
   }
@@ -796,6 +848,11 @@
   initMixin(Vue); // 扩展init方法
   initLifycycle(Vue);
   Vue.prototype.$nextTick = nextTick;
+  Vue.prototype.$watch = function (expOrFn, cb) {
+    new Watcher(this, expOrFn, {
+      user: true
+    }, cb); // this是vm,因为是vm调用
+  };
 
   return Vue;
 

@@ -1,43 +1,6 @@
 import Watcher from "./observe/watcher.js";
 import { createElementVNode, createTextVNode } from "./vdom/index.js";
-
-function createElm(vnode) {
-    let { tag,data,children,text } = vnode;
-    if(typeof tag === 'string') {   // 标签
-        vnode.el = document.createElement(tag); // 将真实节点和虚拟节点对应
-        patchProps(vnode.el,data); 
-        children.forEach(child => {
-            vnode.el.appendChild(createElm(child));
-        })
-    } else {
-        vnode.el = document.createTextNode(text);
-    }
-    return vnode.el;
-}
-
-function patchProps(el,props) {
-    for(let key in props) {
-        if(key === 'style') {
-            for(let styleName in props[key]) {
-                el.style[styleName] = props.style[styleName];
-            }
-        } else {
-            el.setAttribute(key,props[key]);
-        }
-    }
-}
-
-function patch(oldVNode,VNode) {
-    const isRealElement = oldVNode.nodeType;
-    if(isRealElement) {
-        const elm = oldVNode;   // 获取真实元素
-        const parentElm = elm.parentNode;   // 拿到父元素
-        let newElm = createElm(VNode);
-        parentElm.insertBefore(newElm,elm.nextSibling);
-        parentElm.removeChild(elm); // 删除老节点
-        return newElm;
-    }
-}
+import { patch } from "./vdom/patch.js";
 
 export function initLifycycle(Vue) {
     Vue.prototype._update = function(vnode) {

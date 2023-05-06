@@ -511,7 +511,7 @@
     if (typeof tag === 'string') {
       // 标签
       vnode.el = document.createElement(tag); // 将真实节点和虚拟节点对应
-      patchProps(vnode.el, data);
+      patchProps(vnode.el, {}, data);
       children.forEach(function (child) {
         vnode.el.appendChild(createElm(child));
       });
@@ -520,14 +520,29 @@
     }
     return vnode.el;
   }
-  function patchProps(el, props) {
-    for (var key in props) {
-      if (key === 'style') {
-        for (var styleName in props[key]) {
+  function patchProps(el, oldProps, props) {
+    // 旧节点有样式，新节点没有，则删除
+    var oldStyle = oldProps.style || {};
+    var newStyle = props.style || {};
+    for (var key in oldStyle) {
+      if (!newStyle[key]) {
+        el.style[key] = '';
+      }
+    }
+    // 对比新旧属性
+    for (var _key in oldProps) {
+      if (!props[_key]) {
+        el.removeAttribute(_key);
+      }
+    }
+    for (var _key2 in props) {
+      // 使用新的覆盖旧的
+      if (_key2 === 'style') {
+        for (var styleName in props[_key2]) {
           el.style[styleName] = props.style[styleName];
         }
       } else {
-        el.setAttribute(key, props[key]);
+        el.setAttribute(_key2, props[_key2]);
       }
     }
   }
@@ -540,8 +555,64 @@
       parentElm.insertBefore(newElm, elm.nextSibling);
       parentElm.removeChild(elm); // 删除老节点
       return newElm;
+    } else {
+      return patchVNode(oldVNode, VNode);
     }
   }
+  function isSameVnode(vnode1, vnode2) {
+    return vnode1.tag === vnode2.tag && vnode1.key === vnode2.key;
+  }
+  function patchVNode(oldVNode, VNode) {
+    // 1. 两个节点不同标签，直接删除旧节点，换新节点
+    // 2. 是相同节点 （判断节点tag和key）继续比较属性是否有差异（复用老节点，更新差异）
+    // 3. 继续比较子节点
+    if (!isSameVnode(oldVNode, VNode)) {
+      // 用父亲节点来操作子节点
+      var newNode = createElm(VNode);
+      oldVNode.el.parentNode.replaceChild(newNode, oldVNode);
+      return newNode;
+    }
+    var el = oldVNode.el; // 复用老节点元素
+    if (!oldVNode.tag) {
+      // 是文本
+      if (oldVNode.text !== VNode.text) {
+        el.textContent = VNode.text; // 更新文本内容
+      }
+    }
+    // 是标签
+    patchProps(el, oldVNode.data, VNode.data);
+    // 比较儿子节点
+    // 1. 一方有子节点，一方没有
+    // 2. 两方都有子节点
+    var oldChildren = oldVNode.children || [];
+    var newChildren = VNode.children || [];
+    if (oldChildren.length > 0 && newChildren.length > 0) {
+      updateChildren(el, oldChildren, newChildren);
+    } else if (newChildren.length > 0) {
+      mountChildren(el, newChildren);
+    } else if (oldChildren.length > 0) {
+      el.innerHTML = ''; // 可以循环删除
+    }
+
+    return el;
+  }
+  function mountChildren(el, newChildren) {
+    for (var i = 0; i < newChildren.length; ++i) {
+      var child = newChildren[i];
+      el.appendChild(child);
+    }
+  }
+  function updateChildren(el, oldChildren, newChildren) {
+    var oldEndIndex = oldChildren.length - 1;
+    var newEndIndex = newChildren.length - 1;
+
+    // 前前 前后 后前 后后比较
+    oldChildren[0];
+    newChildren[0];
+    oldChildren[oldEndIndex];
+    newChildren[newEndIndex];
+  }
+
   function initLifycycle(Vue) {
     Vue.prototype._update = function (vnode) {
       var vm = this,
@@ -800,6 +871,14 @@
       return watcher.value;
     };
   }
+  function initStateMixin(Vue) {
+    Vue.prototype.$nextTick = nextTick;
+    Vue.prototype.$watch = function (expOrFn, cb) {
+      new Watcher(this, expOrFn, {
+        user: true
+      }, cb); // this是vm,因为是vm调用
+    };
+  }
 
   function initMixin(Vue) {
     // 给Vue增加init方法
@@ -846,13 +925,8 @@
     this._init(options);
   }
   initMixin(Vue); // 扩展init方法
-  initLifycycle(Vue);
-  Vue.prototype.$nextTick = nextTick;
-  Vue.prototype.$watch = function (expOrFn, cb) {
-    new Watcher(this, expOrFn, {
-      user: true
-    }, cb); // this是vm,因为是vm调用
-  };
+  initLifycycle(Vue); // vm_update vm_render
+  initStateMixin(Vue); // 实现了nextTick $watch
 
   return Vue;
 

@@ -1,6 +1,6 @@
 import Dep from "./observe/dep.js";
 import { observe } from "./observe/index.js";
-import Watcher from "./observe/watcher.js";
+import Watcher, { nextTick } from "./observe/watcher.js";
 
 export function initState(vm) {
     // 将数据拿出来，进行数据劫持
@@ -87,5 +87,11 @@ function createComputedGetter(key) { // 检测是否执行，即缓存结果
             watcher.depend();
         }
         return watcher.value;
+    }
+}
+export function initStateMixin(Vue) {
+    Vue.prototype.$nextTick = nextTick;
+    Vue.prototype.$watch = function(expOrFn,cb) {
+        new Watcher(this,expOrFn,{user:true},cb);  // this是vm,因为是vm调用
     }
 }

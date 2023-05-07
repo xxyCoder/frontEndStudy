@@ -1,6 +1,6 @@
-const fs = require('fs');
+const fs = require('fs');   // file system
 
-// 写文件，异步
+// 1. 写文件，异步 写入成功则err = null
 fs.writeFile('./tmp/hello.txt',"abcdefghijklmnopqrstuvwxyz",err => {
     if(err) {
         console.log(err);
@@ -10,7 +10,34 @@ fs.writeFile('./tmp/hello.txt',"abcdefghijklmnopqrstuvwxyz",err => {
     }
 });
 
-// 读文件，异步
+// 2. 写文件，同步
+fs.writeFileSync('./tmp/hello.txt','6666');
+
+console.log("异步不等待，继续执行");
+
+// 3. 追加写入 异步
+fs.appendFile('./tmp/hello.txt','xxyCoder',err => {
+    if(err) {
+        console.log('追加失败');
+    } else {
+        console.log('追加成功');
+    }
+})
+fs.writeFile('./tmp/hello.txt','xxyCoder',{flag: 'a'},err => {
+    if(err) {
+        console.log('追加失败');
+    } else {
+        console.log('追加成功');
+    }
+})
+
+// 4. 创建写入流对象
+const ws = fs.createWriteStream('./tmp/stream.txt');
+ws.write("xxyCoder\r\n");
+ws.write("6666")
+ws.close();
+
+// 5. 读文件，异步
 fs.readFile('./tmp/hello.txt',(err,data) => {
     if(data) {
         console.log('success');

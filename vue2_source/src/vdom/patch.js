@@ -12,7 +12,7 @@ function createElm(vnode) {
     return vnode.el;
 }
 
-function patchProps(el, oldProps, props) {
+function patchProps(el, oldProps = {}, props = {}) {
     // 旧节点有样式，新节点没有，则删除
     let oldStyle = oldProps.style || {};
     let newStyle = props.style || {};
@@ -109,6 +109,43 @@ function updateChildren(el,oldChildren,newChildren) {
     let newEndVNode = newChildren[newEndIndex];
 
     while(oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
-        
+        // 前前比较
+        if(isSameVnode(oldStartVNode,newStartVNode)) {
+            patchVNode(oldStartVNode,newStartVNode);
+            oldStartVNode = oldChildren[++ oldStartIndex];
+            newStartVNode = newChildren[++ newStartIndex];
+        }
+        // 后后比较
+        else if(isSameVnode(oldEndVNode,newEndVNode)) {
+            patchVNode(oldEndVNode,newEndVNode);
+            oldEndVNode = oldChildren[-- oldEndIndex];
+            newEndVNode = newChildren[-- newEndIndex];
+        }
+        // 交叉对比
+        else if(isSameVnode(oldEndVNode,newStartVNode)) {
+            patchVNode(oldEndVNode,newStartVNode);
+            oldEndVNode = oldChildren[-- oldEndIndex];
+            newStartVNode = newChildren[newStartIndex ++];
+
+            el.insertBefore(oldEndVNode.el,oldStartVNode.el);   // 将尾旧节点移到头旧节点前
+        }
+        else if(isSameVnode(oldStartVNode,newEndVNode)) {
+            patchVNode(oldStartVNode,newEndVNode);
+            el.insertBefore(oldStartVNode.el,oldEndIndex.el.nextSibling);
+            oldStartVNode = oldChildren[++ oldStartIndex];
+            newEndVNode = newChildren[-- newEndIndex];
+        }
+    }
+
+    if(newStartIndex <= newEndIndex) {  // 有新节点，插入
+        for(let i = newStartIndex;i <= newEndIndex;++ i) {
+            let childEl = createElm(newChildren[i]);    // 将虚拟节点转换为真实节点并插入
+            let anchor = newChildren[newStartIndex + 1] ? newChildren[newStartIndex + 1].el : null;
+            el.insertBefore(childEl,anchor);
+        }
+    }
+
+    while(oldStartIndex <= oldEndIndex) {   // 多余旧节点，删除
+        el.removeChild(oldChildren[oldStartIndex ++].el);
     }
 }

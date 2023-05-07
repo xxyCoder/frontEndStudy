@@ -520,7 +520,9 @@
     }
     return vnode.el;
   }
-  function patchProps(el, oldProps, props) {
+  function patchProps(el) {
+    var oldProps = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var props = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     // 旧节点有样式，新节点没有，则删除
     var oldStyle = oldProps.style || {};
     var newStyle = props.style || {};
@@ -603,14 +605,55 @@
     }
   }
   function updateChildren(el, oldChildren, newChildren) {
+    // vue2采用双指针比较
+    var oldStartIndex = 0;
+    var newStartIndex = 0;
     var oldEndIndex = oldChildren.length - 1;
     var newEndIndex = newChildren.length - 1;
 
     // 前前 前后 后前 后后比较
-    oldChildren[0];
-    newChildren[0];
-    oldChildren[oldEndIndex];
-    newChildren[newEndIndex];
+    var oldStartVNode = oldChildren[0];
+    var newStartVNode = newChildren[0];
+    var oldEndVNode = oldChildren[oldEndIndex];
+    var newEndVNode = newChildren[newEndIndex];
+    while (oldStartIndex <= oldEndIndex && newStartIndex <= newEndIndex) {
+      // 前前比较
+      if (isSameVnode(oldStartVNode, newStartVNode)) {
+        patchVNode(oldStartVNode, newStartVNode);
+        oldStartVNode = oldChildren[++oldStartIndex];
+        newStartVNode = newChildren[++newStartIndex];
+      }
+      // 后后比较
+      else if (isSameVnode(oldEndVNode, newEndVNode)) {
+        patchVNode(oldEndVNode, newEndVNode);
+        oldEndVNode = oldChildren[--oldEndIndex];
+        newEndVNode = newChildren[--newEndIndex];
+      }
+      // 交叉对比
+      else if (isSameVnode(oldEndVNode, newStartVNode)) {
+        patchVNode(oldEndVNode, newStartVNode);
+        oldEndVNode = oldChildren[--oldEndIndex];
+        newStartVNode = newChildren[newStartIndex++];
+        el.insertBefore(oldEndVNode.el, oldStartVNode.el); // 将尾旧节点移到头旧节点前
+      } else if (isSameVnode(oldStartVNode, newEndVNode)) {
+        patchVNode(oldStartVNode, newEndVNode);
+        el.insertBefore(oldStartVNode.el, oldEndIndex.el.nextSibling);
+        oldStartVNode = oldChildren[++oldStartIndex];
+        newEndVNode = newChildren[--newEndIndex];
+      }
+    }
+    if (newStartIndex <= newEndIndex) {
+      // 有新节点，插入
+      for (var i = newStartIndex; i <= newEndIndex; ++i) {
+        var childEl = createElm(newChildren[i]); // 将虚拟节点转换为真实节点并插入
+        var anchor = newChildren[newStartIndex + 1] ? newChildren[newStartIndex + 1].el : null;
+        el.insertBefore(childEl, anchor);
+      }
+    }
+    while (oldStartIndex <= oldEndIndex) {
+      // 多余旧节点，删除
+      el.removeChild(oldChildren[oldStartIndex++].el);
+    }
   }
 
   function initLifycycle(Vue) {

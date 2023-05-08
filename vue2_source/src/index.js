@@ -1,3 +1,4 @@
+import { initGlobalAPI } from "./globalAPI";
 import { initMixin } from "./init";
 import { initLifycycle } from "./lifecycle";
 import { initStateMixin } from "./state";
@@ -9,5 +10,6 @@ function Vue(options) {
 initMixin(Vue); // 扩展init方法
 initLifycycle(Vue); // vm_update vm_render
 initStateMixin(Vue);    // 实现了nextTick $watch
+initGlobalAPI(Vue);
 
 export default Vue;

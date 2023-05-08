@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="app">
-        {{ firstname }} -- {{ lastname }} --- {{ age }}
+        <div>{{ firstname }} -- {{ lastname }} --- {{ age }}</div>
     </div>
     <script>
         // 实现diff算法
@@ -18,12 +18,18 @@
             el: '#app',
             data() {
                 return {
-                    firstname: 'xy',
+                    firstname: 'xxy',
                     lastname: 'x',
                     age: 21
                 }
             }
         });
+        const app = document.getElementById('app');
+        setTimeout(() => {
+            let span = document.createElement('span');
+            span.innerHTML = 'xxxx';
+            app.append(span);
+        },1000);
     </script>
 </body>
 </html>

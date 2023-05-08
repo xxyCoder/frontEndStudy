@@ -5,7 +5,13 @@ import { patch } from "./vdom/patch.js";
 export function initLifycycle(Vue) {
     Vue.prototype._update = function(vnode) {
         const vm = this,el = vm.$el;
-        vm.$el = patch(el,vnode);    // 既有初始化的功能，又有更新的功能
+        const preVNode = vm._vnode;
+        vm._vnode = vnode;  // 保存，用于下次diff算法
+        if(preVNode) {  // 表示之前渲染过
+            vm.$el = patch(preVNode,vnode);
+        } else {
+            vm.$el = patch(el,vnode);   // 既有初始化的功能，又有更新的功能
+        }
     };
     // _c(tag,{},child)
     Vue.prototype._c = function() {

@@ -9,7 +9,6 @@ export function initMixin(Vue) {   // 给Vue增加init方法
         vm.$options = options;
         // 初始化状态
         initState(vm);
-
         if(options.el) {    // 说明用户传递了el
             vm.$mount(options.el);  // 实习数据挂载
         }
@@ -18,6 +17,7 @@ export function initMixin(Vue) {   // 给Vue增加init方法
         const vm = this;
         el = document.querySelector(el);
         let ops = vm.$options;
+
         if(!ops.render) {   // 没有渲染函数
             let template;
             if(!ops.template && el) {   // 也没有模板，但是有el,说明用户在body区域写了HTML标签
@@ -28,6 +28,7 @@ export function initMixin(Vue) {   // 给Vue增加init方法
                 }
             }
             if(template) {
+                console.log(template);
                 const render = compileToFunction(template);
                 ops.render = render;
             }

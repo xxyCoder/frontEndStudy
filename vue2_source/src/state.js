@@ -5,13 +5,13 @@ import Watcher, { nextTick } from "./observe/watcher.js";
 export function initState(vm) {
     // 将数据拿出来，进行数据劫持
     const ops = vm.$options;
-    if(ops.data) {  // 如果给了数据
+    if(ops?.data) {  // 如果给了数据
         initData(vm);
     }
-    if(ops.computed) {  // 如果有计算属性
+    if(ops?.computed) {  // 如果有计算属性
         initComputed(vm);
     }
-    if(ops.watch) {
+    if(ops?.watch) {
         initWatch(vm);
     }
 }

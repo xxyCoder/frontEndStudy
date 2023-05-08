@@ -49,6 +49,96 @@ fs.readFile('./tmp/hello.txt',(err,data) => {
     }
 });
 
+// 6. 流式读取文件
+const rs = fs.createReadStream('./tmp/hello.txt');
+rs.on('data',chunk => { // 每次读取min(64kb,文件剩余长度) 读取是一块一块读，读完一块(chunk)接着下一块读取
+    console.log(chunk.length,'readStream');
+});
+
+// 7. 文件重命名和移动
+fs.rename('./tmp/test.txt','./tmp/test1.txt',err => {
+    if(err) {
+        console.log('重命名失败');
+    } else {
+        console.log('重命名成功');
+    }
+})
+fs.rename('./tmp/test1.txt','./tmp/tmpdir/test.txt',err => {
+    if(err) {
+        console.log('移动失败');
+    } else {
+        console.log('移动成功');
+    }
+})
+
+// 8. 文件删除
+fs.unlink('./tmp/tmpdir/test.txt',err => {
+    if(err) {
+        console.log('删除失败');
+    } else {
+        console.log('删除成功');
+    }
+})
+fs.rm('./tmp/test2.txt',err => {
+    if(err) {
+        console.log('删除失败1');
+    } else {
+        console.log('删除成功1');
+    }
+})
+
+// 9. 创建目录
+fs.mkdir('./tmp/tmpdir',err => {
+    if(err) {
+        console.log('创建失败');
+    } else {
+        console.log('创建成功');
+    }
+});
+// 9.1 递归创建
+fs.mkdir('./tmp/a/b/c',{recursive: true},err => {
+    if(err) {
+        console.log('递归创建失败');
+    } else {
+        console.log('递归创建成功');
+    }
+})
+
+// 10. 读取目录
+fs.readdir('./tmp/',(err,data) => {
+    if(err) {
+        console.log('读取目录失败');
+    } else {
+        console.log('读取目录成功',data);
+    }
+})
+
+// 11. 删除文件夹
+fs.rmdir('./tmp/a/b/c',err => { // 删除目录的时候要确保该目录下内容为空
+    if(err) {
+        console.log('删除目录失败');
+    } else {
+        console.log('删除目录成功');
+    }
+})
+// 11.1 递归删除
+fs.rm('./tmp/a',{recursive: true},err => {
+    if(err) {
+        console.log('递归删除失败');
+    } else {
+        console.log('递归删除成功');
+    }
+})
+
+// 12. 查看文件状态
+fs.stat('./tmp/hello1.txt',(err,data) => {
+    if(err) {
+        console.log('查看失败');
+    } else {
+        console.log('查看成功',data);
+    }
+})
+
 // 测试权限
 fs.access('./tmp/hello.txt',fs.constants.R_OK | fs.constants.W_OK,err => {
     if(err) {
@@ -58,15 +148,6 @@ fs.access('./tmp/hello.txt',fs.constants.R_OK | fs.constants.W_OK,err => {
     }
 })
 
-// 异步追加数据
-fs.appendFile('./tmp/hello.txt','123456789',err => {
-    if(err) {
-        console.log('fail');
-    } else {
-        console.log('success');
-    }
-});
-
 // 拷贝
 fs.copyFile('./tmp/hello.txt','./tmp/hello1.txt',err => {
     if(err) {
@@ -74,11 +155,6 @@ fs.copyFile('./tmp/hello.txt','./tmp/hello1.txt',err => {
     } else {
         console.log('copy success');
     }
-});
-
-// 创建目录
-fs.mkdir('./tmp/tmpdir',err => {
-    console.log(err);
 });
 
 // 打开文件

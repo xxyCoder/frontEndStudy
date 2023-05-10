@@ -139,7 +139,7 @@ fs.stat('./tmp/hello1.txt',(err,data) => {
     }
 })
 
-// 测试权限
+// 13. 测试权限
 fs.access('./tmp/hello.txt',fs.constants.R_OK | fs.constants.W_OK,err => {
     if(err) {
         console.log('can not write or read')
@@ -148,7 +148,7 @@ fs.access('./tmp/hello.txt',fs.constants.R_OK | fs.constants.W_OK,err => {
     }
 })
 
-// 拷贝
+// 14. 拷贝
 fs.copyFile('./tmp/hello.txt','./tmp/hello1.txt',err => {
     if(err) {
         console.log('copy fail');
@@ -157,7 +157,7 @@ fs.copyFile('./tmp/hello.txt','./tmp/hello1.txt',err => {
     }
 });
 
-// 打开文件
+// 15. 打开文件
 let buf = Buffer.alloc(10);
 fs.open('./tmp/hello.txt','a+',(err,fd) => {
     if(fd) {

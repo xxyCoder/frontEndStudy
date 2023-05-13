@@ -18,6 +18,15 @@ const server = http.createServer((request,response) => {
     let pathname = res.pathname;
     let username = res.query.username;
     console.log(pathname + ' ' + username);
+    // 7. 设置响应状态码
+    response.statusCode = 200;
+    // 8. 设置响应头
+    response.setHeader('content-type','text/html;charset=utf-8');
+    response.setHeader('Server','Node.js');
+    response.setHeader('test',['a','b','c']);   // 设置多个同名响应头
+    // 9. 设置响应体,调用了write就不需要调用end去设置响应体
+    response.write('666');
+    response.write('777');
     response.end('hello');
 });
 // 2. 监听端口，启动服务器

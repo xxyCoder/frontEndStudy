@@ -14,7 +14,7 @@ export function initMixin(Vue) {   // 给Vue增加init方法
         }
     }
     Vue.prototype.$mount = function(el) {
-        const vm = this;
+        const vm = this; 
         el = document.querySelector(el);
         let ops = vm.$options;
 
@@ -28,7 +28,6 @@ export function initMixin(Vue) {   // 给Vue增加init方法
                 }
             }
             if(template) {
-                console.log(template);
                 const render = compileToFunction(template);
                 ops.render = render;
             }

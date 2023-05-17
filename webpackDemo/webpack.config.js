@@ -88,12 +88,18 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({
+        new HtmlWebpackPlugin({ 
             title: 'html-webpack-plugin',
             template: './public/index.html'
         }),
         new DefinePlugin({
             BASE_URL: '"./"'
         })
-    ]
+    ],
+    optimization: {
+        splitChunks: {
+            chunks: 'async',
+            name: 'common'
+        }
+    }
 };

@@ -5,15 +5,14 @@ import Dep from "./dep";
 class Observe {
     constructor(data) {
         this.dep = new Dep();   // 给所有对象都新增dep
-        
+        // this是Observe的实例,同时给数据加标识，如果有属性表示该数据被监测过
+        // data.__ob__ = this;
+        // 但是要变成不可枚举的，不然在observe死循环
+        Object.defineProperty(data, '__ob__', {
+            value: this,
+            enumerable: false
+        });
         if (Array.isArray(data)) {
-            // this是Observe的实例,同时给数据加标识，如果有属性表示该数据被监测过
-            // data.__ob__ = this;
-            // 但是要变成不可枚举的，不然在observe死循环
-            Object.defineProperty(data,'__ob__',{
-                value: this,
-                enumerable: false
-            });
             // 用户一般使用数组方法修改数组，那么重写这些方法去监控
             // data.__proto__ = {} 不推荐 直接重写，那么数组其他方法也没了
             data.__proto__ = newArrayProto;
@@ -34,9 +33,9 @@ class Observe {
 }
 
 function dependArray(value) {
-    for(let i = 0;i < value.length;++ i) {
+    for (let i = 0; i < value.length; ++i) {
         value[i].__ob__ && value[i].__ob__.dep.depend();
-        if(Array.isArray(value[i])) {
+        if (Array.isArray(value[i])) {
             dependArray(value[i]);
         }
     }
@@ -47,11 +46,11 @@ export function defineReactive(target, key, value) {
     let dep = new Dep();
     Object.defineProperty(target, key, {
         get() {
-            if(Dep.target) {
+            if (Dep.target) {
                 dep.depend();   // 让这个属性收集器记住当前的watcher
-                if(childOb) {   // 让数组和对象本身也进行依赖收集
+                if (childOb) {   // 让数组和对象本身也进行依赖收集
                     childOb.dep.depend();
-                    if(Array.isArray(value)) {
+                    if (Array.isArray(value)) {
                         console.log(value);
                         dependArray(value);
                     }
@@ -74,7 +73,7 @@ export function observe(data) {
         return;    // 只对对象进行劫持
     }
     // 还需要判断一个对象是否被劫持过，劫持过就不需要重复劫持了，故需要添加一个实例来判断
-    if(data.__ob__ instanceof Observe) {
+    if (data.__ob__ instanceof Observe) {
         return data.__ob__;
     }
     return new Observe(data);

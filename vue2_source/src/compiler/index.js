@@ -19,9 +19,7 @@ function genProps(attrs) {  // 属性是一个数组
 }
 
 function genChildren(children) {
-    if(children) {
-        return children.map(child => gen(child)).join(',');
-    }
+    return children.map(child => gen(child)).join(',');
 }
 
 function gen(node) {

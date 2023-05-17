@@ -22,7 +22,10 @@ export function initLifycycle(Vue) {
         return createTextVNode(this,...arguments);
     };
     Vue.prototype._s = function(value) {
-        return JSON.stringify(value);
+        if(typeof value === 'object') {
+            value = JSON.stringify(value);
+        }
+        return value;
     };
     Vue.prototype._render = function() {
         // 让with中的this指向实例

@@ -5,3 +5,4 @@ module.exports = {
     // ]
     presets: ['@babel/preset-env']
 }
+// npm i @babel/core @babel/preset-env babel-loader -D

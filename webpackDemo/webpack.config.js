@@ -3,6 +3,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin');   // 自动创建html不需要自己创建
 const { DefinePlugin } = require('webpack') // 自定义常量
 
+const webpack = require('webpack');
+
 module.exports = {
     entry: './src/index.js',
     output: {
@@ -94,12 +96,24 @@ module.exports = {
         }),
         new DefinePlugin({
             BASE_URL: '"./"'
-        })
+        }),
+        new webpack.HotModuleReplacementPlugin()
     ],
+    devServer: {
+        contentBase: './dist',
+        hot: true
+    },
     optimization: {
         splitChunks: {
             chunks: 'async',
             name: 'common'
         }
+    },
+    watch: true,
+    // 开启监听模式，配置才有用
+    watchOptions: {
+        ignored: /node_modules/,    // 忽略那些文件变化
+        aggregateTime: 300, // 监听到变化之后，等待多久才执行
+        poll: 1000  // 轮询文件是否变化1秒多少次，能够监听文件变化也就是去轮询
     }
 };

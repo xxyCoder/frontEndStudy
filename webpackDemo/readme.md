@@ -78,3 +78,54 @@
 # mode
 - 指定当前构建的环境，production、development、none
 - 设置不同的mode，可以开启webpack中不同的内置函数
+
+# 文件监听
+- 启动命令 webpack --watch
+- 配置webpack.config.js 设置 watch: true
+
+# 热更新 webpack-dev-server
+- WDS不刷新浏览器，不输出文件，而是放在内存中
+- 使用webpack内置插件 HotModuleReplacementPlugin
+
+# 文件指纹
+- 打包输出的文件名的后缀
+- Hash
+    和整个项目构建相关，只要有项目文件有更改，整个项目构建的hash值就会变化
+    对于图片文件设置file-loader的name
+        use: [{
+            loader: 'file-loader',
+            options: {
+                name: 'img/[name][hash:8].[ext]'
+            }
+        }]
+- Chunkhash
+    和webpack打包的chunk有关，不同的entry会生成不同的chunkhash值
+    对于JS文件设置output的filename
+        output: {
+            filename: '[name][chunkhash:8].js',
+            path: 'xx'
+        }
+- Contenthash
+    根据文件内容来定义hash，文件内容不变则contenthash不变
+    对于CSS文件，设置MiniCssExtractPlugin的filename
+        plugins: [
+            new MiniCssExtractPlugin({
+                filename: '[name][contenthash:8].css'
+            })
+        ]
+
+# 代码压缩
+- JS压缩
+    uglifyjs-webpack-plugin
+- css压缩
+    optimize-css-assets-webpack-plugin
+    同时使用cssnano预处理器
+    plugins: [
+        new OptimizeCssAssetsWebpackPlugin({
+            assetNameRegExp: /\.css$/g,
+            cssProcessor: require('cssnano')
+        })
+    ]
+- html压缩
+    html-webpack-plugin
+    

@@ -127,5 +127,44 @@
         })
     ]
 - html压缩
-    html-webpack-plugin
-    
+    html-webpack-plugin 
+
+# 补充CSS3前缀
+- autoprefixer插件 搭配 postcss-loader使用
+    test: /.css$/,
+    use: [
+        ...,
+        {
+            loader: 'postcss-loader',
+            options: {
+                plugins: () => [
+                    require('autoprefixer')({
+                        browsers: ['last 2 version','>1%','ios 7']
+                    })
+                ]
+            }
+        }
+    ]
+
+# px转换rem
+- px2rem-loader
+
+# 静态资源内联
+## CSS
+- 借助style-loader
+    use: [
+        {
+            loader: 'style-loader',
+            options: {
+                insertAt: 'top', // 样式插入head
+                singleton: true // 将所有style标签合并成一个
+            }
+        }
+    ]
+- html-inline-css-webpack-plugin
+
+# tree-sharking原理
+- 利用ES6模块特点
+    - 只能作为模块顶层语句出现
+    - import模块名只能是字符串常量
+    - import binding是immutable的

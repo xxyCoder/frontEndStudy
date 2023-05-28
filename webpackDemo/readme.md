@@ -1,5 +1,13 @@
+# 什么是webpack
+- 静态资源打包工具
+- 会以一个或多个文件作为包的入口，将整个项目所有文件编译组合成一个或多个文件输出
+# 功能
+- 开发模式，仅能编译JS中的ES Module语法
+- 生产模式，可以编译JS Module，还可以压缩JS代码
+# 配置文件
+- 使用webpack命令，会去查找webpack.config.js这个配置文件加载使用
 # entry
-- 依赖图的入口是entry
+- 依赖图的入口是entry，路径使用相对路径
 - 单入口，适合单页面，只有一个入口文件
     - 字符串
     entry: './path/entry/index.js'
@@ -9,10 +17,12 @@
         app: './src/app.js',
         adminApp: './src/adminApp.js'
     }
+    - 数组
+    entry: ['./src/app.js','./src/adminApp.js']
     - 定义一个key，值为路径
 
 # output
-- 告诉webpack如何将编译后的文件输出到磁盘
+- 告诉webpack如何将编译后的文件输出到磁盘，path使用绝对路径
 - 单入口配置
     entry: './src/index.js',
     output: {
@@ -38,7 +48,26 @@
 - less-loader   支持.less文件加载和解析
 - ts-loader     将TS转换成JS
 - file-loader   进行图片、字体等打包
+    {
+        test: /\.(png|jpe?g|gif|svg)&/,
+        loader: 'file-loader',
+        options: {
+            name: '[name].[ext]',
+            outputPath: 'images/',  // 文件输出路径
+            publicPaht: 'images/'   // 文件可访问的路径
+        }
+    }
 - url-loader    处理图片、字体等打包，可以设置较小资源自动base64
+    {
+        test: /\.(png|jpe?g|gif|svg)&/,
+        loader: 'url-loader',
+        options: {
+            limit: 1024,    // 小于该限制使用url-loader，大于该限制交给file-loader
+            name: '[name].[ext]',
+            outputPath: 'images/',  // 文件输出路径
+            publicPaht: '/assets/'   // 文件可访问的路径
+        }
+    }
 - raw-loader    将文件以字符串形式导入
 - style-loader  将样式通过<style>标签插入到head中
 - thread-loader 多进程打包JS和CSS
@@ -57,7 +86,34 @@
     }
     - test指定匹配规则
     - use指定使用的loader
+        - 字符串形式
+            use: 'style-loader'
+        - 数组形式
+            use: ['style-loader','css-loader']
+        - 对象形式
+            use: {
+                loader: 'url-loader',
+                options: {
+                    limit: 1024
+                }
+            }
     - 执行loader的顺序是链式调用，且方向是从右到左，右边解析完成传给左边的loader继续解析
+## 资源模块
+- 在webpack5的时候，内置模块替代了raw-loader、file-loader、url-loader
+- asset/resource: 代表外部文件，并在构建输出中生成一个单独的文件。
+- asset/inline: 代表外部文件，并将其转换为base64编码格式并内联到构建输出中。
+- asset/source: 代表外部文件，并将其作为字符串导出。
+- asset: 选择asset/resource或asset/inline之一，具体取决于资源文件大小的阈值。
+{
+    test: /\.(png|jpe?g|gif|webp|svg)$/,
+    type: "asset",
+    parser: {
+        dataUrlCondition: {
+            maxSize: 10 * 1024
+        }
+    }
+}
+
 
 # plugins
 - 增强webpack功能，用于bundle文件的优化，资源管理和环境变量注入
@@ -192,3 +248,26 @@
     {
         plugins: ["@babel/plugin-syntax-dynamic-import"]
     }
+
+# sourcemap
+1. 调试原始源代码
+- 通过Sourcemap，开发人员可以在浏览器中直接调试源代码而不是打包后的代码。这意味着可以在Chrome DevTools或其他调试器中断点，并查看和编辑源文件中的内容。
+2. 找到错误来源
+- 当出现错误时，Sourcemap可以帮助开发人员快速定位错误源代码所在的位置，减少调试时间。
+devtool: 'source-map'
+
+# 基础库分离
+- 将基础包通过cdn引入，不打入bundle中
+- 使用html-webpack-externals-plugin
+    new HtmlWebpackExternalsPlugin({
+        externals: [
+            {
+                module: 'react',
+                entry: '模块cdn路径',
+                global: 'React'
+            }
+        ]
+    })
+
+# 分离公共页面资源
+- SplitChunks插件

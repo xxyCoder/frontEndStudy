@@ -1,5 +1,6 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');   // 自动创建html不需要自己创建
 const { DefinePlugin } = require('webpack') // 自定义常量
 
@@ -72,6 +73,7 @@ module.exports = {
             },
             {
                 test: /\.js$/,
+                exclude: /node_modules/,    // 排除
                 use: [
                     // {
                     //     loader: 'babel-loader',
@@ -90,14 +92,18 @@ module.exports = {
     },
     plugins: [
         new CleanWebpackPlugin(),
-        new HtmlWebpackPlugin({ 
+        new HtmlWebpackPlugin({ // 处理html资源，将打包好的JS自动引入
             title: 'html-webpack-plugin',
-            template: './public/index.html'
+            template: './public/index.html' // 以该文件为模板创建html文件，结构一致
         }),
         new DefinePlugin({
             BASE_URL: '"./"'
         }),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new ESLintPlugin({
+            // 检测哪些文件
+            context: path.resolve(__dirname, "src")
+        })
     ],
     devServer: {
         contentBase: './dist',
@@ -115,5 +121,12 @@ module.exports = {
         ignored: /node_modules/,    // 忽略那些文件变化
         aggregateTimeout: 300, // 监听到变化之后，等待多久才执行
         poll: 1000  // 轮询文件是否变化1秒多少次，能够监听文件变化也就是去轮询
-    }
+    },
+    // 开发服务器
+    devServer: {
+        host: 'localhost',
+        port: 3000,
+        open: true  // 自动打开浏览器
+    },
+    mode: 'development'
 };

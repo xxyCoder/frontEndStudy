@@ -114,6 +114,19 @@
     }
 }
 
+# Eslint
+- 检查JS和JSX的语法工具
+- eslint-webpack-plugin
+
+# babel
+- JS编译器，将ES6或者更高级别的的代码转换为向后兼容的JS版本语法
+- preset 预设
+    - 一组babel插件，扩展babel功能
+
+# 开发服务器&自动化
+- webpack-dev-server
+- 指令 webpack server 才能开启
+- 不会输出资源（dist没有内容），在内存编译打包
 
 # plugins
 - 增强webpack功能，用于bundle文件的优化，资源管理和环境变量注入

@@ -1,0 +1,27 @@
+# 数值也可以使用_作为分隔符
+- 不能放在数值的最前面和最后面
+- 不能两个或两个以上的分隔符连在一起
+- 小数点的前后不能有分隔符
+- 科学计数中，表示指数e的前后不能有分隔符
+- 分隔符不能紧跟着ox、ob等
+# Number.isNaN、Number.isFinite和传统方法isNaN、isFinite的区别
+- 传统方法会将非数值转换为数值，再进行判断
+- 新方法只对数值有效，非数组类型一律返回false
+# Number.parseInt、Number.parseFloat
+- 与传统方法没有区别，只是移植到Number身上，减少全局方法，使语言更加模块化
+# Number、Number.parseInt、Number.parseFloat之间的区别
+- 对于boolea类型，Number将true、false转换为对于的十进制；parseInt和parseFloat则为NaN
+- 对于数值，表现一致
+- 对于null，Number表示为0；另外两个表现为NaN
+- 对于undefined，都表现为NaN
+- 对于字符串
+  - 空字符串，Number表示0，其余表示NaN
+  - 带了其他符号，Number表现为NaN，其他解析到符号就输出之前的数值
+  - 如果符号是0x或者其他进制表示，正常解析，对于parseFloat则解析到字符串结束
+# BigInt数据类型
+- JS所有数字使用64位保存成浮点数，而bigint没有位数限制
+- 为了与number区别，末尾必须添加n
+- 且与number数字不相等，即使大小一样
+# bigint继承了toString和valueOf，两者有什么区别呢？
+- toString是传入参数的数值
+- valueOf结果是在toString末尾添加n

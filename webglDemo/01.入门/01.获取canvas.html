@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="canvas" width="400" height="400">
+
+    </canvas>
+    <script>
+        // 获取画布
+        const canvas = document.getElementById('canvas');
+        // 获取上下文
+        const ctx = canvas.getContext('webgl');
+        // 颜色 rgba
+        ctx.clearColor(1.0, 0.0, 0.0, 1.0);
+        ctx.clear(ctx.COLOR_BUFFER_BIT);
+    </script>
+</body>
+
+</html>

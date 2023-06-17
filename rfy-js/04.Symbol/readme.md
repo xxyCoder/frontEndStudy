@@ -1,0 +1,11 @@
+# Symbol是什么
+- JS中表示独一无二的，可以保证与其他属性名不会冲突
+- 可以用于做对象的属性名，保证不会将其原有属性名覆盖
+# Symbol使用其函数为什么不能使用new调用？
+- Symbol是原始类型，不是对象
+# Symbol如何被遍历到？
+- Symbol是不能被Object.keys()、Object.getOwnPropertyNames()、JSON.stringify()遍历到的，也不会出现在for...of、for...in中
+- 也并非私有属性，可以通过Object.getPropertySymbols()方法获取，该方法返回一个数组
+# 有时候希望重新使用相同的Symbol值该如何？
+- Symbol.for方法可以做到，会先搜索其参数，如果有则返回该Symbol，如果没有就新建，并注册到全局
+- Symbol.for与Symbol的区别就在于前者会注册到全局环境中

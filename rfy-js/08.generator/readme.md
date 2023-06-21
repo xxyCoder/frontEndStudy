@@ -1,0 +1,21 @@
+# generator是什么？
+- 特殊的函数，可以被暂停和恢复
+- 该函数被调用的时候，不会立即执行函数体内部代码，而是返回一个generator的迭代器
+- 本质可以看作一个状态机，内部封装了多个状态
+# next这个方法可以有参数吗？
+- 可以携带，yield表达式本身没有参数，或者总是返回undefined，next方法可以携带一个参数，该参数会被当作上一个yield表达式的返回值
+- 本质就是将yield表达式变成一个值
+# throw方法是干什么用的？
+- 可以在函数体外抛出错误，然后在generator函数体内捕获，在内部能够被捕获的前提是调用了一次next
+- 该方法也可以接受一个参数，被catch捕获
+- 如果内部没有try catch，那么错误会被函数外的try catch捕获
+- 本质是将yield变成一个throw语句
+# return方法是干什么用的？
+- 可以返回给定的值，并终结generator函数
+- 如果有内部有finally，执行完return会进入finally函数体内
+- 本质是将yield变成return语句
+# yield*
+- 表示后面跟的是遍历器对象，只要有iterator接口即可
+- 本质上是使用for...of循环yield单个值
+# 注意点
+- 不能和new搭配使用

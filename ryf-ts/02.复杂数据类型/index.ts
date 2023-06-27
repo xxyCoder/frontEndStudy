@@ -12,6 +12,12 @@ let tom: Person = {
         console.log(this.name);
     }
 }
+// 接口继承类
+class Programmer { }
+// 接口继承
+interface xxy extends Person, Programmer {
+
+}
 // 数组
 let nums1: number[] = [1, 2, 3, 4];
 // 数组泛型
@@ -38,3 +44,15 @@ interface IFunction {
     (x: number, y: number, z?: number): number;
 }
 const sum3: IFunction = function (a: number, b: number): number { return a + b };
+// 类类型
+interface ClockInterface {
+    currentTime: Date;
+    setTime(d: Date);
+    // new (hour: number, minute: number);
+}
+class Clock implements ClockInterface {
+    currentTime: Date;
+    setTime(d: Date) {
+        this.currentTime = d;
+    }
+}

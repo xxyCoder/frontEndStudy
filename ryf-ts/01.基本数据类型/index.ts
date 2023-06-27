@@ -23,4 +23,15 @@ something = "123";
 something = { a: 1, b: function () { console.log('b') } };
 console.log((something as { a: number }).a);
 // 联合类型
-let union: { a: 1, b: 'b' } | { a: 2, c: 'c' } = { a: 1, b: 'b'};
+let union: { a: 1, b: 'b' } | { a: 2, c: 'c' } = { a: 1, b: 'b' };
+// 元组
+let x: [string, number] = ["a", 1];
+x.push(1);
+// 枚举
+enum Color {
+    Red = 1,
+    Green,
+    Blue = 4
+}
+let c: Color = Color.Red;
+let colorName: string = Color[2];

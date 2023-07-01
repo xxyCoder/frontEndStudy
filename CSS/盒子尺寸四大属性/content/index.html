@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .title {
+            counter-reset: myCounter;
+        }
+
+        li {
+            counter-increment: myCounter;
+        }
+
+        li::before {
+            content: counter(myCounter) ". ";
+        }
+    </style>
+</head>
+
+<body>
+    <ul class="title">
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+    </ul>
+
+    <script>
+        const ul = document.getElementsByClassName('title')[0];
+        console.log(window.getComputedStyle(ul.firstElementChild, "::before").content);
+    </script>
+</body>
+
+</html>
